@@ -1,0 +1,102 @@
+create database ecom_practice;
+use ecom_practice;
+
+
+-- table: customer
+
+create table customer (
+  id int primary key auto_increment,
+  name varchar(45),
+  city varchar(45)
+);
+
+insert into customer (name, city) values
+  ('Ravi Kumar', 'Delhi'),
+  ('Sneha Iyer', 'Mumbai'),
+  ('Anil Mehta', 'Chennai'),
+  ('Pooja Reddy', 'Hyderabad'),
+  ('Karan Singh', 'Bengaluru');
+
+
+-- table: product
+
+create table product (
+  id int primary key auto_increment,
+  title varchar(45),
+  price double,
+  description varchar(100),
+  category_id int,
+  foreign key (category_id) references category(id)
+);
+
+insert into product (title, price, description, category_id) values
+  ('Wings of Fire', 350.00, 'Autobiography by Dr. A.P.J. Abdul Kalam', 1),
+  ('MI Power Bank 20000mAh', 1999.00, 'Fast charging power bank', 2),
+  ('FabIndia Kurta', 1200.00, 'Cotton kurta for men', 3),
+  ('Wooden Wall Clock', 850.00, 'Handcrafted wall clock', 4),
+  ('Classmate Notebook Pack', 180.00, 'Set of 6 ruled notebooks', 5);
+
+
+-- table: purchase
+
+create table purchase (
+  id int primary key auto_increment,
+  date_of_purchase varchar(45),
+  customer_id int,
+  product_id int,
+  foreign key (customer_id) references customer(id),
+  foreign key (product_id) references product(id)
+);
+
+insert into purchase (date_of_purchase, customer_id, product_id) values
+  ('2024-11-12', 1, 1), 
+  ('2025-01-08', 2, 2), 
+  ('2025-03-15', 3, 3), 
+  ('2025-04-01', 4, 4), 
+  ('2025-05-10', 5, 5);
+
+
+-- table: category
+
+create table category (
+  id int primary key auto_increment,
+  name varchar(45)
+);
+
+insert into category (name) values
+  ('Books'),
+  ('Electronics'),
+  ('Clothing'),
+  ('Home Decor'),
+  ('Stationery');
+
+
+-- 1. add customer
+
+insert into customer (name,city) values
+  ("john doe","mumbai"), 
+  ("jane doe","chennai");
+
+
+-- 2. add category
+
+insert into category (name) values 
+  ('mobiles'), 
+  ('laptops');
+
+
+-- 3. insert product with category
+
+insert into Product (name, price, category_id) values
+  ('iPhone 15', 79999.99, 1),
+  ('Samsung Galaxy S24', 69999.99, 1),
+  ('Dell Inspiron', 55000.00, 2);
+
+
+-- 4. fetch all products with category_id
+
+select * from Product where category_id = 1;
+-- 5. insert new record in purchase table 
+
+INSERT INTO Purchase (customer_id, product_id, quantity) VALUES 
+(1, 1, 2);

@@ -1,0 +1,98 @@
+/* 
+Book(id, title, price, author, publication_house,category,book_count,status)
+
+publication_house:- ["Mcgraw Hill", "DreamFolks", "Warner Bros"]
+category:- ["FICTION", "WAR", "COMEDY", "SPORTS"]
+
+status:- ["IN STOCK","OUT_OF_STOCK"]
+
+Write following procedures:- 
+
+1. Fetch all Books that are "IN STOCK" and price is less than given value. 
+2. Delete books that are from given publication_house. do not activate safe mode. 
+3. Update the price of books by given percent based on given category. do not activate safe mode. 
+
+*/
+
+
+
+create database java_fsd_may_2025;
+use java_fsd_may_2025;
+
+create table Book(
+	id int primary key auto_increment,
+  title varchar(255),
+  price decimal(10,2),
+  author varchar(255),
+  publication_house varchar(255),
+  category varchar(255),
+  book_count int,
+  status varchar(255);
+
+insert into Book ( id,title,price,author,publication_house,category,book_count,status) values
+  (1, 'Silent Echoes', 275, 'Aarav Mehta', 'Pearson', 'THRILLER', 4, 'IN STOCK'),
+  (2, 'Laugh Riot', 135, 'Neha Sharma', 'Horizon Books', 'COMEDY', 5, 'IN STOCK'),
+  (3, 'Champions Arena', 320, 'Vikram Rao', 'SportsHouse', 'SPORTS', 1, 'IN STOCK'),
+  (4, 'Mythic Realms', 180, 'Kavita Iyer', 'Pearson', 'FANTASY', 8, 'IN STOCK'),
+  (5, 'Planet of Jokes', 110, 'Raj Kapoor', 'Horizon Books', 'COMEDY', 0, 'OUT_OF_STOCK'),
+  (6, 'Echoes of Valor', 480, 'Divya Nair', 'Penguin Random', 'HISTORY', 7, 'IN STOCK'),
+  (7, 'Shadows of Empire', 512, 'Rahul Mehta', 'HarperCollins', 'HISTORY', 5, 'IN STOCK'),
+  (8, 'Voices of the Forgotten', 450, 'Anita Desai', 'Rupa Publications', 'HISTORY', 9, 'OUT OF STOCK'),
+  (9, 'Chronicles of Resistance', 398, 'Karan Singh', 'Bloomsbury India', 'HISTORY', 6, 'IN STOCK'),
+  (10, 'Legacy of Ashes', 530, 'Neha Sharma', 'Westland Books', 'HISTORY', 8, 'IN STOCK');
+
+
+
+-- 1. Fetch all Books that are "IN STOCK" and price is less than given value. 
+
+delimiter $$
+
+create procedure FetchInStockBooks(in max_price decimal(10,2))
+BEGIN
+	select * from book where status='In Stock' and price < max_price;
+END;
+
+
+
+-- 2. Delete books that are from given publication_house. do not activate safe mode. 
+
+delimiter $$
+
+create procedure proc_delete_by_pub(in p_pub_house varchar(255))
+BEGIN
+	declare v_total_books int default 0;
+  declare v_index int default 0;
+  declare v_book_id int default 0;
+    
+	select count(id) into v_total_books from book where publication_house = p_pub_house;
+
+    while v_index < v_total_books do
+        select id into v_book_id from book where publication_house = p_pub_house limit v_index, 1;
+        delete from book where id = v_book_id;
+        set v_index = v_index + 1;
+    END while;
+END;
+
+
+
+-- 3. Update the price of books by given percent based on given category. do not activate safe mode. 
+
+delimiter $$
+
+create procedure proc_update_price(
+    in p_percent double,
+    in p_category varchar(255)
+)
+BEGIN
+    declare v_total int default 0;
+    declare v_index int default 0;
+    declare v_book_id int default 0;
+
+    select count(id) into v_total from book where category = p_category;
+
+    while v_index < v_total do
+        select id into v_book_id from book where category = p_category limit v_index, 1;
+        update book set price = price + (price * p_percent / 100) where id = v_book_id;
+        set v_index = v_index + 1;
+    END while;
+END;

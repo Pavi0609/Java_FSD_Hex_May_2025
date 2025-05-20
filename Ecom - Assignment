@@ -96,6 +96,8 @@ insert into Product (name, price, category_id) values
 -- 4. fetch all products with category_id
 
 select * from Product where category_id = 1;
+
+
 -- 5. insert new record in purchase table 
 
 INSERT INTO Purchase (customer_id, product_id, quantity) VALUES 

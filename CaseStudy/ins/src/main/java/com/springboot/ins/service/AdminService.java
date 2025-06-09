@@ -1,13 +1,13 @@
 package com.springboot.ins.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List; 
+
+import org.springframework.beans.factory.annotation.Autowired; 
 import org.springframework.stereotype.Service;
 
 import com.springboot.ins.model.Admin;
 import com.springboot.ins.model.User;
 import com.springboot.ins.repository.AdminRepository;
-
-import java.util.List;
 
 @Service
 public class AdminService {
@@ -23,8 +23,8 @@ public class AdminService {
         this.userService = userService;
     }
 
-    // Insert new admin with user and role
-    public Admin insertAdmin(Admin admin) {
+    // add new admin 
+    public Admin addAdmin(Admin admin) {
 
         // Extract user from admin
         User user = admin.getUser();
@@ -32,34 +32,29 @@ public class AdminService {
         // Assign role
         user.setRole("ADMIN");
 
-        // Save user
-        User savedUser = userService.signUp(user);
+        // Save user in DB
+		user = userService.signUp(user);
 
         // Attach user back to admin
-        admin.setUser(savedUser);
+        admin.setUser(user);
 
         // Save admin to DB
         return adminRepository.save(admin);
     }
-
-    // Create new admin
-    public Admin createAdmin(Admin admin) {
-        return adminRepository.save(admin);
-    }
-
+    
     // Get all admins
     public List<Admin> getAll() {
         return adminRepository.findAll();
     }
-
-    // Get admin by ID
-    public Admin getAdminById(Long id) {
-        return adminRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Admin ID not found: " + id));
-    }
-
-    // Get admin by username
-    public Admin getAdminByUsername(String username) {
-        return adminRepository.getAdminByUsername(username);
-    }
+    
+    // get admin by id (using token)
+	public Admin getAdminByUsername(String username) {
+		return adminRepository.getAdminByUsername(username);
+	}
+	
+	// delete customer by id
+	public void deleteByAdminId(Long adminId) {
+		adminRepository.deleteByAdminId(adminId);
+	}
+    
 }

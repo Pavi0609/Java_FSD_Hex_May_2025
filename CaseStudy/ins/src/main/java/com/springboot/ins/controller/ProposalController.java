@@ -1,14 +1,27 @@
 package com.springboot.ins.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;   
+import org.slf4j.LoggerFactory;
 
-// import vechile.hexa.DTO.ProposalCustomerDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
+import java.util.List;
+
 import com.springboot.ins.model.Proposal;
 import com.springboot.ins.service.ProposalService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/proposal")
@@ -16,39 +29,45 @@ public class ProposalController {
 
     @Autowired
     private ProposalService proposalService;
-
+    
+	Logger logger = LoggerFactory.getLogger("ProposalController");
+    
     // add new proposal with customer_id
-    @PostMapping("/add/{customerId}")
-    public Proposal createProposal(@RequestBody Proposal proposal, @PathVariable Long customerId) {
-        return proposalService.createProposal(proposal, customerId);
+    @PostMapping("/add/{customerId}/{policyId}")
+    public ResponseEntity<Proposal> createProposal(@RequestBody Proposal proposal,
+    											   @PathVariable Long customerId,
+    											   @PathVariable Long policyId) {
+        Proposal savedProposal = proposalService.createProposal(proposal, customerId, policyId);
+        return ResponseEntity.ok(savedProposal);
     }
-
+    
     // get all proposals
     @GetMapping("/get-all")
-    public List<Proposal> getAllProposals() {
-        return proposalService.getAllProposals();
-    }
+	public List<Proposal> getAllProposals(
+			@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+			@RequestParam(name = "size", required = false, defaultValue = "1000000") Integer size) {
+		if (page == 0 && size == 1000000)
+			logger.info("No Pagination call for all courses");
+		return proposalService.getAllProposals(page, size);
+	}
 
-    // get proposal by customer_id   
-    @GetMapping("/customer/{customerId}")
-    public List<Proposal> getProposalsByCustomerId(@PathVariable Long customerId) {
-        return proposalService.getProposalsByCustomerId(customerId);
+    // get proposal by id (using token)
+    @GetMapping("/get-one-username")
+    public Proposal getProposalById(Principal principal) {
+    	String username = principal.getName(); 
+    	return proposalService.getProposalByUsername(username) ;
     }
-
-    // get proposal details along with its customer details
-    @GetMapping("/with-customer/{id}")
-    public ResponseEntity<Proposal> getProposalWithCustomer(@PathVariable Long id) {
-        try {
-            Proposal proposal = proposalService.getProposalWithCustomer(id);
-            return ResponseEntity.ok(proposal);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    
+    // delete proposal by id
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteByProposalId(@PathVariable Long proposalId) {
+        proposalService.deleteByProposalId(proposalId);
+        return ResponseEntity.status(HttpStatus.OK).body("Proposal deleted");
     }
-
-    // get all proposals with their customers
-    @GetMapping("/customer_all")
-    public List<Proposal> getAllProposalsWithCustomers() {
-        return proposalService.getAllProposalsWithCustomers();
-    }
+    
+	@GetMapping("/get-all/proposal/policy/{policyId}")
+	public List<Proposal> getProposalsByPolicyId(@PathVariable("policyId") Long policyId) {
+		return proposalService.getProposalsByPolicyId(policyId);
+	}
+    
 }

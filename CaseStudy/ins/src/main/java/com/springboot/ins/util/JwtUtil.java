@@ -1,6 +1,6 @@
 package com.springboot.ins.util;
 
-import java.security.Key;
+import java.security.Key; 
 import java.util.Date;
 
 import org.springframework.stereotype.Component;
@@ -11,11 +11,6 @@ import io.jsonwebtoken.security.Keys;
 
  @Component
 public class JwtUtil {
-/*
- * In this class we need to create following methods 
- * 1. Method to Create JWT Token 
- * 2. Method to verify the Token 
- * */
 	
 	private static final String secretKey = "INS_HEX_MAY_78674867909090909090909";
 	private static final long expirationTimeInMills=43200000; //12 hrs 
@@ -23,7 +18,7 @@ public class JwtUtil {
 	private Key getSigningKey(){
 		return Keys.hmacShaKeyFor(secretKey.getBytes());
 	}
-	/* Method to Generate JWT Token*/
+	// Method to Generate JWT Token
 	public String createToken(String email){
 		 
 		return Jwts.builder()
@@ -34,7 +29,7 @@ public class JwtUtil {
 	                .compact();
 		}
 	
-	 
+	// Method to Verify JWT Token 
 	public boolean verifyToken(String token, String email) {
 		String extractedEmail = Jwts.parserBuilder()
 									.setSigningKey(getSigningKey())
@@ -51,6 +46,7 @@ public class JwtUtil {
 		 
 		return extractedEmail.equals(email) && new Date().before(expirationDate); 			
 	}
+	
 	public String extractUsername(String token) {
 		 
 		return  Jwts.parserBuilder()

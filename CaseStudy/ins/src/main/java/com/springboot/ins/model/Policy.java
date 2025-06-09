@@ -1,9 +1,19 @@
 package com.springboot.ins.model;
 
-import jakarta.persistence.*;
-import java.util.Date;
+import java.util.Date; 
 
 import com.springboot.ins.enums.PolicyStatus;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "policy")
@@ -32,16 +42,12 @@ public class Policy {
     @Temporal(TemporalType.DATE)
     private Date endDate;
     
-  //   @OneToOne
-  //   @JoinColumn(name = "user_id")
-  //   private User user; 
-    
-    // Constructors
-    public Policy() {
-    }
-    
+	// Constructors
+	public Policy() {
+		super();
+	}
+	
 	public Policy(Long policyId, String policyName, Double premiumAmount, PolicyStatus policyStatus, Date startDate, Date endDate) {
-
 		this.policyId = policyId;
 		this.policyName = policyName;
 		this.premiumAmount = premiumAmount;

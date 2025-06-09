@@ -1,7 +1,16 @@
 package com.springboot.ins.model;
 
-import jakarta.persistence.*;
-import java.util.Date;
+import java.util.Date; 
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "proposal")
@@ -11,12 +20,11 @@ public class Proposal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long proposalId;
     
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;  
-    
-    @Column(name = "policy_id")
-    private String policyId;
+	@ManyToOne
+	private Customer customer;
+	
+	@ManyToOne
+	private Policy policy;
     
     @Column(name = "vehicle_type", nullable = false)
     private String vehicleType;
@@ -37,20 +45,21 @@ public class Proposal {
     // Constructors   
     public Proposal() {
     }
-    
-    public Proposal(Long proposalId, Customer customer, String policyId, String vehicleType, String vehicleModel,
-            String registrationNumber, String manufactureYear, Date submittedDate) {
-        this.proposalId = proposalId;
-        this.customer = customer;
-        this.policyId = policyId;
-        this.vehicleType = vehicleType;
-        this.vehicleModel = vehicleModel;
-        this.registrationNumber = registrationNumber;
-        this.manufactureYear = manufactureYear;
-        this.submittedDate = submittedDate;
-    }
 
-    // Getters and Setters
+	public Proposal(Long proposalId, Customer customer, Policy policy, String vehicleType, String vehicleModel,
+			String registrationNumber, String manufactureYear, Date submittedDate) {
+		super();
+		this.proposalId = proposalId;
+		this.customer = customer;
+		this.policy = policy;
+		this.vehicleType = vehicleType;
+		this.vehicleModel = vehicleModel;
+		this.registrationNumber = registrationNumber;
+		this.manufactureYear = manufactureYear;
+		this.submittedDate = submittedDate;
+	}
+
+	// Getters and Setters
 	public Long getProposalId() {
 		return proposalId;
 	}
@@ -67,12 +76,12 @@ public class Proposal {
 		this.customer = customer;
 	}
 
-	public String getPolicyId() {
-		return policyId;
+	public Policy getPolicy() {
+		return policy;
 	}
 
-	public void setPolicyId(String policyId) {
-		this.policyId = policyId;
+	public void setPolicy(Policy policy) {
+		this.policy = policy;
 	}
 
 	public String getVehicleType() {
@@ -114,4 +123,5 @@ public class Proposal {
 	public void setSubmittedDate(Date submittedDate) {
 		this.submittedDate = submittedDate;
 	}
+
 }

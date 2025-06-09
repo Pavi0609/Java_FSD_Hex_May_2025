@@ -1,7 +1,16 @@
 package com.springboot.ins.model;
 
-import jakarta.persistence.*;
-import java.util.Date;
+import java.util.Date; 
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "customer")
@@ -31,16 +40,15 @@ public class Customer {
     private String customerPanNo;
     
     @OneToOne
-    @JoinColumn(name = "user_id")
     private User user; 
 
 	// Constructors
     public Customer() {
+		super();
     }
     
 	public Customer(Long id, String customerName, String customerAddress, Date customerDob, Integer customerAge,
 			String customerAadharNo, String customerPanNo, User user) {
-		super();
 		this.id = id;
 		this.customerName = customerName;
 		this.customerAddress = customerAddress;

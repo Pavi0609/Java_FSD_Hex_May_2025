@@ -1,11 +1,20 @@
 package com.springboot.ins.controller;
 
-import java.security.Principal;
+import java.security.Principal;   
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.ins.model.Customer;
 import com.springboot.ins.service.CustomerService;
@@ -23,11 +32,6 @@ public class CustomerController {
         Customer saved = customerService.insertCustomer(customer);
         return ResponseEntity.ok(saved);
     }
-/*
-    public Customer createCustomer(@RequestBody Customer customer) {
-        return customerService.createCustomer(customer);
-    }
-*/
 
     // get all customers
     @GetMapping("/get-all")
@@ -37,27 +41,29 @@ public class CustomerController {
                 .body(customerService.getAll());
     }
     
-    // get customer by id
-    @GetMapping("/get-one/{id}")
-    public ResponseEntity<?> getCustomerById(@PathVariable Long id) {
-        try {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(customerService.getCustomerById(id));
-        }
-        catch(Exception e){
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-        }
-    }
-    
-    // get customer by username
-    @GetMapping("/get-one-username/{id}")
-    public Customer getCustomerById(Principal principal) {
-    	// Ask spring username of loggedIn user using Principal interface 
+    // get customer by id (using token)
+    @GetMapping("/get-one-username")
+    public Customer getCustomerByUsername(Principal principal) {
     	String username = principal.getName(); 
     	return customerService.getCustomerByUsername(username) ;
-    }  
+    } 
+    
+	// update customer by id 
+	@PutMapping("/update/{id}")
+	public ResponseEntity<Customer> updateByCustomerId(@PathVariable Long id,
+			                                           @RequestBody Customer updateCustomer) {
+		return ResponseEntity
+				.status(HttpStatus.CREATED)
+				.body(customerService.updateByCustomerId(id, updateCustomer));
+	}
+    
+    // delete customer by id
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteCustomerById(@PathVariable Long id) {
+        customerService.deleteCustomerById(id);
+        return ResponseEntity
+        		.status(HttpStatus.OK)
+        		.body("Customer deleted");
+    }
     
 }

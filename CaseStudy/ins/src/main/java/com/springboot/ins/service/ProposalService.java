@@ -1,53 +1,81 @@
 package com.springboot.ins.service;
 
+import java.util.List; 
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.springboot.ins.exception.PolicyNotFoundException;
+import com.springboot.ins.exception.ProposalNotFoundException;
+import com.springboot.ins.exception.ResourceNotFoundException;
 import com.springboot.ins.model.Customer;
+import com.springboot.ins.model.Policy;
 import com.springboot.ins.model.Proposal;
 import com.springboot.ins.repository.CustomerRepository;
+import com.springboot.ins.repository.PolicyRepository;
 import com.springboot.ins.repository.ProposalRepository;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProposalService {
 
     @Autowired
     private ProposalRepository proposalRepository;
-
-    @Autowired
     private CustomerRepository customerRepository;
+    private PolicyRepository policyRepository;
+
+	public ProposalService(ProposalRepository proposalRepository, CustomerRepository customerRepository, PolicyRepository policyRepository) {
+		super();
+		this.proposalRepository = proposalRepository;
+		this.customerRepository = customerRepository;
+		this.policyRepository = policyRepository;
+	}
 
     // add new proposal with customer_id
-    public Proposal createProposal(Proposal proposal, Long customerId) {
-        Optional<Customer> customer = customerRepository.findById(customerId);
-        if (customer.isPresent()) {
-            proposal.setCustomer(customer.get());  // Changed from setCustomerId
-            return proposalRepository.save(proposal);
-        }
-        throw new RuntimeException("Customer not found with id: " + customerId);
+    public Proposal createProposal(Proposal proposal, Long customerId, Long policyId) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+        
+        Policy policy = policyRepository.findById(policyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Policy not found"));
+        
+        proposal.setCustomer(customer);
+        proposal.setPolicy(policy);
+        
+        return proposalRepository.save(proposal);
     }
-
+   	
     // get all proposals
-    public List<Proposal> getAllProposals() {
-        return proposalRepository.findAll();
-    }
-
-    // get proposal by customer_id
-    public List<Proposal> getProposalsByCustomerId(Long customerId) {
-        return proposalRepository.findByCustomer_Id(customerId);
-    }
+    public List<Proposal> getAllProposals(int page, int size) {
+    	
+        // Activate Pageable Interface 
+        Pageable pageable = PageRequest.of(page, size);
+        
+        // Call findAll inbuilt method as pass this pageable interface ref 
+        return proposalRepository.findAll(pageable).getContent();
+    }   
     
-    // get proposal details along with its customer details
-    public Proposal getProposalWithCustomer(Long proposalId) {
-        return proposalRepository.findById(proposalId)
-                .orElseThrow(() -> new RuntimeException("Proposal not found with id: " + proposalId));
+    // get proposal by id (using token)
+    public Proposal getProposalByUsername(String username) {
+        return proposalRepository.findByCustomerUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found for username: " + username));
     }
+	
+	// delete proposal by id
+	public void deleteByProposalId(Long proposalId) {
+		proposalRepository.deleteByProposalId(proposalId);
+	}
+	
+	// get proposal by policy id
+	public List<Proposal> getProposalsByPolicyId(Long policyId) {
+		proposalRepository.findById(policyId)
+				.orElseThrow(() -> new ProposalNotFoundException("Customer ID Invalid"));
 
-    // get all proposals with their customers
-    public List<Proposal> getAllProposalsWithCustomers() {
-        return proposalRepository.findAll(); 
-    }
+		List<Proposal> list = proposalRepository.getProposalsByPolicyId(policyId);
+		if (list != null && list.isEmpty())
+			throw new PolicyNotFoundException("Policy not found");
+		return list;
+	}
+
 }

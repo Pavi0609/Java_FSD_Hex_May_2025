@@ -1,17 +1,17 @@
 package com.springboot.ins.service;
 
-import org.slf4j.Logger; 
-import org.slf4j.LoggerFactory; 
+import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;  
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.springboot.ins.dto.CustomerDto;
 import com.springboot.ins.exception.CustomerNotFoundException;
 import com.springboot.ins.model.Customer;
 import com.springboot.ins.model.User;
 import com.springboot.ins.repository.CustomerRepository;
-
-import java.util.List;
 
 @Service
 public class CustomerService {
@@ -53,6 +53,12 @@ public class CustomerService {
     public List<Customer> getAll() { 
         return customerRepository.findAll();
     }
+    
+	// get all customers by dto
+	public List<CustomerDto> getAllCustomers() {
+	    List<Customer> customer = customerRepository.findAll();
+	    return CustomerDto.convertCustomerIntoDto(customer);
+	}
     
     // get customer by id (using token)
 	public Customer getCustomerByUsername(String username) {

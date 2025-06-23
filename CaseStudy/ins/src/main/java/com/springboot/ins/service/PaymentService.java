@@ -1,91 +1,95 @@
 package com.springboot.ins.service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.springboot.ins.exception.CustomerNotFoundException;
 import com.springboot.ins.exception.PaymentNotFoundException;
+import com.springboot.ins.exception.ProposalNotFoundException;
 import com.springboot.ins.exception.QuoteNotFoundException;
 import com.springboot.ins.model.Customer;
 import com.springboot.ins.model.Payment;
+import com.springboot.ins.model.Proposal;
 import com.springboot.ins.model.Quote;
 import com.springboot.ins.repository.CustomerRepository;
 import com.springboot.ins.repository.PaymentRepository;
+import com.springboot.ins.repository.ProposalRepository;
 import com.springboot.ins.repository.QuoteRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class PaymentService {
 
     @Autowired
     private PaymentRepository paymentRepository;
-
+    
     @Autowired
     private CustomerRepository customerRepository;
-
+    
+    @Autowired
+    private ProposalRepository proposalRepository;
+    
     @Autowired
     private QuoteRepository quoteRepository;
 
-    public PaymentService(PaymentRepository paymentRepository, CustomerRepository customerRepository, QuoteRepository quoteRepository) {
-		super();
-		this.paymentRepository = paymentRepository;
-		this.customerRepository = customerRepository;
-		this.quoteRepository = quoteRepository;
-	}
-
-	// Create payment by customerId & quoteId
-    public Payment createPayment(Payment payment, Long customerId, Long quoteId) {
+    // Create payment by customerId, quoteId & proposalId
+    @Transactional
+    public Payment createPayment(Long customerId, Long quoteId, Long proposalId, Payment payment) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with ID: " + customerId));
-
-        Quote quote = quoteRepository.findById(quoteId)
-                .orElseThrow(() -> new QuoteNotFoundException("Quote not found with ID: " + quoteId));
-
+            .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + customerId));
+        
         payment.setCustomer(customer);
-        payment.setQuote(quote);
-		payment.setPaymentStatus("PAID");
-        payment.setPaymentDate(LocalDate.now()); 
-
+        
+        if (quoteId != null) {
+            Quote quote = quoteRepository.findById(quoteId)
+                .orElseThrow(() -> new QuoteNotFoundException("Quote not found with id: " + quoteId));
+            payment.setQuote(quote);
+        }
+        
+        if (proposalId != null) {
+            Proposal proposal = proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new ProposalNotFoundException("Proposal not found with id: " + proposalId));
+            payment.setProposal(proposal);
+        }
+        
         return paymentRepository.save(payment);
     }
 
     // Get all payments
-    public List<Payment> getAllPayments(int page, int size) {
-    	
-        // Activate Pageable Interface 
-        Pageable pageable = PageRequest.of(page, size);
-        
-        // Call findAll inbuilt method as pass this pageable interface ref 
-        return paymentRepository.findAll(pageable).getContent();
-    }
-    
-    // Get payment by Customer id    
-    public Payment getPaymentByCustomerId(Long id) {
-        return paymentRepository.findByCustomerId(id)
-                .orElseThrow(() -> new PaymentNotFoundException("Payment not found for customer ID: " + id));
-    }
-    
-    // Get payment by Quote id
-    public Payment getPaymentByQuoteId(Long quoteId) {
-        return paymentRepository.findByQuoteQuoteId(quoteId)
-                .orElseThrow(() -> new PaymentNotFoundException("Payment not found for proposal ID: " + quoteId));
+    public List<Payment> getAllPayments() {
+        return paymentRepository.findAll();
     }
 
     // Get payment by id
-    public Payment getPaymentById(Integer paymentId) {
-        return paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new PaymentNotFoundException("Payment not found with ID: " + paymentId));
+    public Payment getPaymentById(Long id) {
+        return paymentRepository.findById(id)
+            .orElseThrow(() -> new PaymentNotFoundException("Payment not found with id: " + id));
+    }
+
+    // Get payment by Customer id
+    public List<Payment> getPaymentsByCustomerId(Long customerId) {
+        return paymentRepository.findByCustomerId(customerId);
+    }
+
+    // Get payment by Quote id
+    public List<Payment> getPaymentsByQuoteId(Long quoteId) {
+        return paymentRepository.findByQuoteId(quoteId);
+    }
+
+    // Get payment by Proposal id
+    public List<Payment> getPaymentsByProposalId(Long proposalId) {
+        return paymentRepository.findByProposalId(proposalId);
     }
 
     // Delete payment by id
-    public void deletePayment(Integer paymentId) {
-        if (!paymentRepository.existsById(paymentId)) {
-            throw new PaymentNotFoundException("Payment not found with ID: " + paymentId);
+    @Transactional
+    public void deletePayment(Long id) {
+        if (!paymentRepository.existsById(id)) {
+            throw new IllegalArgumentException("Payment not found with id: " + id);
         }
-        paymentRepository.deleteById(paymentId);
+        paymentRepository.deleteById(id);
     }
 }

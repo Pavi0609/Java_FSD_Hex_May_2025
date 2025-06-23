@@ -37,7 +37,7 @@ public class PolicyService {
         if (policies == null || policies.isEmpty()) {
             throw new ResourceNotFoundException("No policies provided for insertion");
         }
-        return policyRepository.saveAll(policies);  // returns saved entities
+        return policyRepository.saveAll(policies);  
     }
     
     // get all policies
@@ -50,6 +50,12 @@ public class PolicyService {
         return policyRepository.findAll(pageable).getContent();
     }
     
+	// get all policies by dto
+	public List<PolicyDto> getAllPolicies() {
+	    List<Policy> policy = policyRepository.findAll();
+	    return PolicyDto.convertPolicyIntoDto(policy);
+	}
+    
     // get policy by id
 	public Policy getPolicyById(Long policyId) {
 		return policyRepository.findById(policyId).orElseThrow(()-> new PolicyNotFoundException("Policy not found"));
@@ -58,12 +64,6 @@ public class PolicyService {
 	// delete policy by id
 	public void deleteByPolicyId(Long policyId) {
 		policyRepository.deleteByPolicyId(policyId);
-	}
-	
-	// get all policies by dto
-	public List<PolicyDto> getAllPolicies() {
-	    List<Policy> policy = policyRepository.findAll();
-	    return PolicyDto.convertPolicyIntoDto(policy);
 	}
 	
 }

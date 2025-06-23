@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +25,7 @@ import com.springboot.ins.service.PolicyService;
 
 @RestController
 @RequestMapping("/api/policy")
+@CrossOrigin(origins = {"http://localhost:5174", "https://localhost:5174"}) 
 public class PolicyController {
 
     @Autowired
@@ -57,6 +58,12 @@ public class PolicyController {
 		return policyService.getAllPolicies(page, size);
 	}
     
+    // get all policies by dto
+    @GetMapping("/get-all-dto")
+    public List<PolicyDto> getAllPolicies() {
+        return policyService.getAllPolicies();
+    }
+    
     // get policy by id
 	@GetMapping("/get-one/{policyId}")
 	public Policy getPolicyById(@PathVariable Long policyId) {
@@ -68,11 +75,6 @@ public class PolicyController {
     public ResponseEntity<?> deleteByPolicyId(@PathVariable Long policyId) {
         policyService.deleteByPolicyId(policyId);
         return ResponseEntity.status(HttpStatus.OK).body("Policy deleted");
-    }
-    
-    @GetMapping("/get-all-dto")
-    public List<PolicyDto> getAllPolicies() {
-        return policyService.getAllPolicies();
     }
     
 }

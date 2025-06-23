@@ -7,11 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +26,7 @@ import com.springboot.ins.service.ProposalService;
 
 @RestController
 @RequestMapping("/api/proposal")
+@CrossOrigin(origins = {"http://localhost:5174", "https://localhost:5174"}) 
 public class ProposalController {
 
     @Autowired
@@ -52,11 +54,17 @@ public class ProposalController {
 	}
 
     // get proposal by id (using token)
-    @GetMapping("/get-one-username")
-    public Proposal getProposalById(Principal principal) {
-    	String username = principal.getName(); 
-    	return proposalService.getProposalByUsername(username) ;
+    @GetMapping("/get-one-cusotmer")
+    public List<Proposal> getProposalsByUsername(Principal principal) {
+        String username = principal.getName(); 
+        return proposalService.getProposalsByUsername(username);
     }
+    
+	// get proposal by policy id
+	@GetMapping("/get-all/proposal/policy/{policyId}")
+	public List<Proposal> getProposalsByPolicyId(@PathVariable("policyId") Long policyId) {
+		return proposalService.getProposalsByPolicyId(policyId);
+	}
     
     // delete proposal by id
     @DeleteMapping("/delete/{id}")
@@ -65,9 +73,13 @@ public class ProposalController {
         return ResponseEntity.status(HttpStatus.OK).body("Proposal deleted");
     }
     
-	@GetMapping("/get-all/proposal/policy/{policyId}")
-	public List<Proposal> getProposalsByPolicyId(@PathVariable("policyId") Long policyId) {
-		return proposalService.getProposalsByPolicyId(policyId);
-	}
+ // update proposal status
+    @PutMapping("/update-status/{proposalId}")
+    public ResponseEntity<Proposal> updateProposalStatus(
+            @PathVariable Long proposalId,
+            @RequestParam boolean newStatus) {
+        Proposal updatedProposal = proposalService.updateProposalStatus(proposalId, newStatus);
+        return ResponseEntity.ok(updatedProposal);
+    }
     
 }

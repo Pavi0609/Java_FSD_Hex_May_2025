@@ -57,7 +57,7 @@ public class QuoteService {
                 .orElseThrow(() -> new QuoteNotFoundException("Quote not found for proposal ID: " + proposalId));
     }
     
-    // Get quote by quote ID
+    // Get quote by ID
     public Quote getQuoteById(Long quoteId) {
         return quoteRepository.findById(quoteId)
                 .orElseThrow(() -> new QuoteNotFoundException("Quote not found with ID: " + quoteId));

@@ -3,11 +3,12 @@ package com.springboot.ins.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,19 +20,20 @@ import com.springboot.ins.model.Claim;
 import com.springboot.ins.service.ClaimService;
 
 @RestController
-@RequestMapping("/api/claim")
+@RequestMapping("/api/claims")
+@CrossOrigin(origins = {"http://localhost:5174", "https://localhost:5174"}) 
 public class ClaimController {
 
     @Autowired
     private ClaimService claimService;
 
-    // Create claim using customer ID and policy ID
-    @PostMapping("/add/customer/{customerId}/policy/{policyId}")
+    // Create claim using customer ID and proposal ID
+    @PostMapping("/add/customer/{customerId}/proposal/{proposalId}")
     public ResponseEntity<Claim> createClaim(
             @PathVariable Long customerId,
-            @PathVariable Long policyId,
+            @PathVariable Long proposalId,
             @RequestBody Claim claim) {
-        return ResponseEntity.ok(claimService.createClaim(claim, customerId, policyId));
+        return ResponseEntity.ok(claimService.createClaim(claim, customerId, proposalId));
     }
 
     // Get all claims
@@ -49,10 +51,10 @@ public class ClaimController {
         return ResponseEntity.ok(claimService.getClaimsByCustomerId(customerId));
     }
 
-    // Get claims by policy ID
-    @GetMapping("/get-all/policy/{policyId}")
-    public ResponseEntity<List<Claim>> getClaimsByPolicy(@PathVariable Long policyId) {
-        return ResponseEntity.ok(claimService.getClaimsByPolicyId(policyId));
+    // Get claims by proposal ID
+    @GetMapping("/get-all/proposal/{proposalId}")
+    public ResponseEntity<List<Claim>> getClaimsByProposal(@PathVariable Long proposalId) {
+        return ResponseEntity.ok(claimService.getClaimsByProposalId(proposalId));
     }
 
     // Get claim by ID
@@ -66,6 +68,15 @@ public class ClaimController {
     public ResponseEntity<Void> deleteClaim(@PathVariable Integer claimId) {
         claimService.deleteClaim(claimId);
         return ResponseEntity.noContent().build();
+    }
+    
+    // Update claim status
+    @PutMapping("/update-status/{claimId}")
+    public ResponseEntity<Claim> updateClaimStatus(
+            @PathVariable Integer claimId,
+            @RequestParam boolean newStatus) {
+        Claim updatedClaim = claimService.updateClaimStatus(claimId, newStatus);
+        return ResponseEntity.ok(updatedClaim);
     }
     
 }

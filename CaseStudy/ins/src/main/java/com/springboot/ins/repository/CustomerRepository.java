@@ -10,6 +10,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT c FROM Customer c WHERE c.user.username = ?1")
     Customer getCustomerByUsername(String username);
 
+    @Query("DELETE FROM Customer c WHERE c.id = ?1")
 	void deleteCustomerById(Long id);
 	
 }

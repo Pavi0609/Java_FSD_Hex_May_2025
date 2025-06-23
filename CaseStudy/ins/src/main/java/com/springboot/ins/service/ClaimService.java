@@ -1,12 +1,14 @@
 package com.springboot.ins.service;
 
-import com.springboot.ins.exception.ResourceNotFoundException;
+import com.springboot.ins.exception.ClaimNotFoundException;
+import com.springboot.ins.exception.CustomerNotFoundException;
+import com.springboot.ins.exception.ProposalNotFoundException;
 import com.springboot.ins.model.Claim;
 import com.springboot.ins.model.Customer;
-import com.springboot.ins.model.Policy;
+import com.springboot.ins.model.Proposal;
 import com.springboot.ins.repository.ClaimRepository;
 import com.springboot.ins.repository.CustomerRepository;
-import com.springboot.ins.repository.PolicyRepository;
+import com.springboot.ins.repository.ProposalRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -26,26 +28,26 @@ public class ClaimService {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private PolicyRepository policyRepository;
+    private ProposalRepository proposalRepository;
 
     public ClaimService(ClaimRepository claimRepository, CustomerRepository customerRepository,
-			PolicyRepository policyRepository) {
-		super();
-		this.claimRepository = claimRepository;
-		this.customerRepository = customerRepository;
-		this.policyRepository = policyRepository;
-	}
+            ProposalRepository proposalRepository) {
+        super();
+        this.claimRepository = claimRepository;
+        this.customerRepository = customerRepository;
+        this.proposalRepository = proposalRepository;
+    }
 
-	// Create a claim using customerId & policyId
-    public Claim createClaim(Claim claim, Long customerId, Long policyId) {
+    // Create a claim using customerId & proposalId
+    public Claim createClaim(Claim claim, Long customerId, Long proposalId) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with ID: " + customerId));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with ID: " + customerId));
 
-        Policy policy = policyRepository.findById(policyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Policy not found with ID: " + policyId));
+        Proposal proposal = proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new ProposalNotFoundException("Proposal not found with ID: " + proposalId));
 
         claim.setCustomer(customer);
-        claim.setPolicy(policy);
+        claim.setProposal(proposal);
         claim.setClaimDate(LocalDate.now());
 
         return claimRepository.save(claim);
@@ -53,7 +55,7 @@ public class ClaimService {
 
     // Get all claims
     public List<Claim> getAllClaims(int page, int size) {
-    	
+        
         // Activate Pageable Interface 
         Pageable pageable = PageRequest.of(page, size);
         
@@ -66,23 +68,32 @@ public class ClaimService {
         return claimRepository.findByCustomerId(customerId);
     }
 
-    // Get claims by policy ID
-    public List<Claim> getClaimsByPolicyId(Long policyId) {
-        return claimRepository.findByPolicyPolicyId(policyId);
+    // Get claims by proposal ID
+    public List<Claim> getClaimsByProposalId(Long proposalId) {
+        return claimRepository.findByProposalId(proposalId);
     }
     
     // Get claim by ID
     public Claim getClaimById(Integer claimId) {
         return claimRepository.findById(claimId)
-                .orElseThrow(() -> new ResourceNotFoundException("Claim not found with ID: " + claimId));
+                .orElseThrow(() -> new ClaimNotFoundException("Claim not found with ID: " + claimId));
     }
     
     // Delete claim by ID
     public void deleteClaim(Integer claimId) {
         if (!claimRepository.existsById(claimId)) {
-            throw new ResourceNotFoundException("Claim not found with ID: " + claimId);
+            throw new ClaimNotFoundException("Claim not found with ID: " + claimId);
         }
         claimRepository.deleteById(claimId);
+    }
+    
+    // Update claim status
+    public Claim updateClaimStatus(Integer claimId, boolean newStatus) {
+        Claim claim = claimRepository.findById(claimId)
+                .orElseThrow(() -> new ClaimNotFoundException("Claim not found with id: " + claimId));
+        
+        claim.setClaimStatus(newStatus);
+        return claimRepository.save(claim);
     }
     
 }

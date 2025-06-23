@@ -1,12 +1,12 @@
 package com.springboot.ins.controller;
 
-import com.springboot.ins.model.Payment; 
+import com.springboot.ins.model.Payment;  
 import com.springboot.ins.service.PaymentService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,51 +19,64 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/payment")
+@RequestMapping("/api/payments_new")
+@CrossOrigin(origins = {"http://localhost:5174", "https://localhost:5174"}) 
 public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
 
-    // Create new payment using customerId & quoteId
-    @PostMapping("/add/customer/{customerId}/quote/{quoteId}")
-    public ResponseEntity<Payment> createPayment(@PathVariable Long customerId,
-            									 @PathVariable Long quoteId,
-            									 @RequestBody Payment payment) {
-        return ResponseEntity.ok(paymentService.createPayment(payment, customerId, quoteId));
+    // Create payment by customerId, quoteId & proposalId
+    @PostMapping("/add/customer/{customerId}")
+    public ResponseEntity<Payment> createPayment(
+            @PathVariable Long customerId,
+            @RequestParam(required = false) Long quoteId,
+            @RequestParam(required = false) Long proposalId,
+            @RequestBody Payment payment) {
+        Payment createdPayment = paymentService.createPayment(customerId, quoteId, proposalId, payment);
+        return ResponseEntity.ok(createdPayment);
     }
 
     // Get all payments
     @GetMapping("/get-all")
-    public ResponseEntity<List<Payment>> getAllPayments(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        List<Payment> payment = paymentService.getAllPayments(page, size);
+    public ResponseEntity<List<Payment>> getAllPayments() {
+        List<Payment> payments = paymentService.getAllPayments();
+        return ResponseEntity.ok(payments);
+    }
+
+    // Get payment by id
+    @GetMapping("/get-one/{id}")
+    public ResponseEntity<Payment> getPaymentById(@PathVariable Long id) {
+        Payment payment = paymentService.getPaymentById(id);
         return ResponseEntity.ok(payment);
     }
 
-    // Get payments by customer ID
-    @GetMapping("/get-one/customer/{customerId}")    
-    public ResponseEntity<Payment> getPaymentByCustomerId(@PathVariable Long proposalId) {
-        return ResponseEntity.ok(paymentService.getPaymentByCustomerId(proposalId));
+    // Get payment by Customer id
+    @GetMapping("/get-one/customer/{customerId}")
+    public ResponseEntity<List<Payment>> getPaymentsByCustomerId(@PathVariable Long customerId) {
+        List<Payment> payments = paymentService.getPaymentsByCustomerId(customerId);
+        return ResponseEntity.ok(payments);
     }
 
-    // Get payment by quote ID
+    // Get payment by Quote id
     @GetMapping("/get-one/quote/{quoteId}")
-    public ResponseEntity<Payment> getPaymentByQuoteId(@PathVariable Long quoteId) {
-        return ResponseEntity.ok(paymentService.getPaymentByQuoteId(quoteId));
-    }
-    
-    // Get payment by ID
-    @GetMapping("/get-one/{paymentId}")
-    public ResponseEntity<Payment> getPaymentById(@PathVariable Integer paymentId) {
-        return ResponseEntity.ok(paymentService.getPaymentById(paymentId));
+    public ResponseEntity<List<Payment>> getPaymentsByQuoteId(@PathVariable Long quoteId) {
+        List<Payment> payments = paymentService.getPaymentsByQuoteId(quoteId);
+        return ResponseEntity.ok(payments);
     }
 
-    // Delete payment by ID
-    @DeleteMapping("/delete/{paymentId}")
-    public ResponseEntity<Void> deletePayment(@PathVariable Integer paymentId) {
-        paymentService.deletePayment(paymentId);
+    // Get payment by Proposal id
+    @GetMapping("/delete/proposal/{proposalId}")
+    public ResponseEntity<List<Payment>> getPaymentsByProposalId(@PathVariable Long proposalId) {
+        List<Payment> payments = paymentService.getPaymentsByProposalId(proposalId);
+        return ResponseEntity.ok(payments);
+    }
+
+    // Delete payment by id
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
+        paymentService.deletePayment(id);
         return ResponseEntity.noContent().build();
     }
+    
 }

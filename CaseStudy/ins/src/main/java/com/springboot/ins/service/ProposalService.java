@@ -7,9 +7,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.springboot.ins.exception.CustomerNotFoundException;
 import com.springboot.ins.exception.PolicyNotFoundException;
 import com.springboot.ins.exception.ProposalNotFoundException;
-import com.springboot.ins.exception.ResourceNotFoundException;
 import com.springboot.ins.model.Customer;
 import com.springboot.ins.model.Policy;
 import com.springboot.ins.model.Proposal;
@@ -35,10 +35,10 @@ public class ProposalService {
     // add new proposal with customer_id
     public Proposal createProposal(Proposal proposal, Long customerId, Long policyId) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
         
         Policy policy = policyRepository.findById(policyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Policy not found"));
+                .orElseThrow(() -> new PolicyNotFoundException("Policy not found"));
         
         proposal.setCustomer(customer);
         proposal.setPolicy(policy);
@@ -57,25 +57,33 @@ public class ProposalService {
     }   
     
     // get proposal by id (using token)
-    public Proposal getProposalByUsername(String username) {
-        return proposalRepository.findByCustomerUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found for username: " + username));
+    public List<Proposal> getProposalsByUsername(String username) {
+        return proposalRepository.findByCustomerUsername(username);
     }
-	
-	// delete proposal by id
-	public void deleteByProposalId(Long proposalId) {
-		proposalRepository.deleteByProposalId(proposalId);
-	}
-	
+    
 	// get proposal by policy id
 	public List<Proposal> getProposalsByPolicyId(Long policyId) {
 		proposalRepository.findById(policyId)
-				.orElseThrow(() -> new ProposalNotFoundException("Customer ID Invalid"));
+				.orElseThrow(() -> new CustomerNotFoundException("Customer ID Invalid"));
 
 		List<Proposal> list = proposalRepository.getProposalsByPolicyId(policyId);
 		if (list != null && list.isEmpty())
 			throw new PolicyNotFoundException("Policy not found");
 		return list;
 	}
+	
+	// delete proposal by id
+	public void deleteByProposalId(Long proposalId) {
+		proposalRepository.deleteByProposalId(proposalId);
+	}
+	
+	// Update proposal status
+		public Proposal updateProposalStatus(Long proposalId, boolean newStatus) {
+		    Proposal proposal = proposalRepository.findById(proposalId)
+		            .orElseThrow(() -> new ProposalNotFoundException("Proposal not found with id: " + proposalId));
+		    
+		    proposal.setProposalStatus(newStatus);
+		    return proposalRepository.save(proposal);
+		}
 
 }

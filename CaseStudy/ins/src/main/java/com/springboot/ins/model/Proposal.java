@@ -20,11 +20,11 @@ public class Proposal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long proposalId;
     
-	@ManyToOne
-	private Customer customer;
-	
-	@ManyToOne
-	private Policy policy;
+    @ManyToOne
+    private Customer customer;
+    
+    @ManyToOne
+    private Policy policy;
     
     @Column(name = "vehicle_type", nullable = false)
     private String vehicleType;
@@ -42,86 +42,97 @@ public class Proposal {
     @Temporal(TemporalType.TIMESTAMP)
     private Date submittedDate;
     
+    @Column(name = "proposal_status")
+    private boolean proposalStatus;
+    
     // Constructors   
     public Proposal() {
     }
 
-	public Proposal(Long proposalId, Customer customer, Policy policy, String vehicleType, String vehicleModel,
-			String registrationNumber, String manufactureYear, Date submittedDate) {
-		super();
-		this.proposalId = proposalId;
-		this.customer = customer;
-		this.policy = policy;
-		this.vehicleType = vehicleType;
-		this.vehicleModel = vehicleModel;
-		this.registrationNumber = registrationNumber;
-		this.manufactureYear = manufactureYear;
-		this.submittedDate = submittedDate;
-	}
+    public Proposal(Long proposalId, Customer customer, Policy policy, String vehicleType, String vehicleModel,
+            String registrationNumber, String manufactureYear, Date submittedDate, boolean proposalStatus) {
+        super();
+        this.proposalId = proposalId;
+        this.customer = customer;
+        this.policy = policy;
+        this.vehicleType = vehicleType;
+        this.vehicleModel = vehicleModel;
+        this.registrationNumber = registrationNumber;
+        this.manufactureYear = manufactureYear;
+        this.submittedDate = submittedDate;
+        this.proposalStatus = proposalStatus;
+    }
 
-	// Getters and Setters
-	public Long getProposalId() {
-		return proposalId;
-	}
+    // Getters and Setters
+    public Long getProposalId() {
+        return proposalId;
+    }
 
-	public void setProposalId(Long proposalId) {
-		this.proposalId = proposalId;
-	}
+    public void setProposalId(Long proposalId) {
+        this.proposalId = proposalId;
+    }
 
-	public Customer getCustomer() {
-		return customer;
-	}
+    public Customer getCustomer() {
+        return customer;
+    }
 
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
-	}
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 
-	public Policy getPolicy() {
-		return policy;
-	}
+    public Policy getPolicy() {
+        return policy;
+    }
 
-	public void setPolicy(Policy policy) {
-		this.policy = policy;
-	}
+    public void setPolicy(Policy policy) {
+        this.policy = policy;
+    }
 
-	public String getVehicleType() {
-		return vehicleType;
-	}
+    public String getVehicleType() {
+        return vehicleType;
+    }
 
-	public void setVehicleType(String vehicleType) {
-		this.vehicleType = vehicleType;
-	}
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
+    }
 
-	public String getVehicleModel() {
-		return vehicleModel;
-	}
+    public String getVehicleModel() {
+        return vehicleModel;
+    }
 
-	public void setVehicleModel(String vehicleModel) {
-		this.vehicleModel = vehicleModel;
-	}
+    public void setVehicleModel(String vehicleModel) {
+        this.vehicleModel = vehicleModel;
+    }
 
-	public String getRegistrationNumber() {
-		return registrationNumber;
-	}
+    public String getRegistrationNumber() {
+        return registrationNumber;
+    }
 
-	public void setRegistrationNumber(String registrationNumber) {
-		this.registrationNumber = registrationNumber;
-	}
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
+    }
 
-	public String getManufactureYear() {
-		return manufactureYear;
-	}
+    public String getManufactureYear() {
+        return manufactureYear;
+    }
 
-	public void setManufactureYear(String manufactureYear) {
-		this.manufactureYear = manufactureYear;
-	}
+    public void setManufactureYear(String manufactureYear) {
+        this.manufactureYear = manufactureYear;
+    }
 
-	public Date getSubmittedDate() {
-		return submittedDate;
-	}
+    public Date getSubmittedDate() {
+        return submittedDate;
+    }
 
-	public void setSubmittedDate(Date submittedDate) {
-		this.submittedDate = submittedDate;
-	}
+    public void setSubmittedDate(Date submittedDate) {
+        this.submittedDate = submittedDate;
+    }
 
+    public boolean isProposalStatus() {
+        return proposalStatus;
+    }
+
+    public void setProposalStatus(boolean proposalStatus) {
+        this.proposalStatus = proposalStatus;
+    }
 }

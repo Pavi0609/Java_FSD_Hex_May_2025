@@ -8,8 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.springboot.ins.exception.ClaimNotFoundException;
 import com.springboot.ins.exception.CustomerNotFoundException;
+import com.springboot.ins.exception.DocumentNotFoundException;
 import com.springboot.ins.exception.PaymentNotFoundException;
+import com.springboot.ins.exception.PolicyAddOnsNotFoundException;
 import com.springboot.ins.exception.PolicyNotFoundException;
 import com.springboot.ins.exception.ProposalNotFoundException;
 import com.springboot.ins.exception.QuoteNotFoundException;
@@ -20,7 +23,7 @@ import io.jsonwebtoken.security.SignatureException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-	// Whenever a RuntimeException is thrown in Controller,then this method gets called
+	// Whenever a RuntimeException is thrown in Controller,then this method gets called    
 	@ExceptionHandler(exception = RuntimeException.class)
 	public ResponseEntity<?> handleRuntime(RuntimeException e) {
 		Map<String,String> map = new HashMap<>();
@@ -103,6 +106,36 @@ public class GlobalExceptionHandler {
 	// Whenever a QuoteNotFoundException is thrown in Controller/service, this method gets called 
 	@ExceptionHandler(exception = QuoteNotFoundException.class)
 	public ResponseEntity<?> handleQuoteNotFoundException(Exception e) {
+		Map<String,String> map = new HashMap<>();
+		map.put("msg", e.getMessage());
+		return ResponseEntity
+				.status(HttpStatus.ACCEPTED)
+				.body(map);
+	}
+	
+	// Whenever a PolicyAddOnsNotFoundException is thrown in Controller/service, this method gets called 
+	@ExceptionHandler(exception = PolicyAddOnsNotFoundException.class)
+	public ResponseEntity<?> handlePolicyAddOnsNotFoundException(Exception e) {
+		Map<String,String> map = new HashMap<>();
+		map.put("msg", e.getMessage());
+		return ResponseEntity
+				.status(HttpStatus.ACCEPTED)
+				.body(map);
+	}
+	
+	// Whenever a ClaimNotFoundException is thrown in Controller/service, this method gets called  
+	@ExceptionHandler(exception = ClaimNotFoundException.class)
+	public ResponseEntity<?> handleClaimNotFoundException(Exception e) {
+		Map<String,String> map = new HashMap<>();
+		map.put("msg", e.getMessage());
+		return ResponseEntity
+				.status(HttpStatus.ACCEPTED)
+				.body(map);
+	}
+	
+	// Whenever a DocumentNotFoundException is thrown in Controller/service, this method gets called 
+	@ExceptionHandler(exception = DocumentNotFoundException.class)
+	public ResponseEntity<?> handleDocumentNotFoundException(Exception e) {
 		Map<String,String> map = new HashMap<>();
 		map.put("msg", e.getMessage());
 		return ResponseEntity

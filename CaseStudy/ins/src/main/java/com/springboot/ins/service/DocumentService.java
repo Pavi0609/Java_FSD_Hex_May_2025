@@ -1,6 +1,7 @@
 package com.springboot.ins.service;
 
-import com.springboot.ins.exception.ResourceNotFoundException;
+import com.springboot.ins.exception.DocumentNotFoundException; 
+import com.springboot.ins.exception.ProposalNotFoundException;
 import com.springboot.ins.model.Document;
 import com.springboot.ins.model.Proposal;
 import com.springboot.ins.repository.DocumentRepository;
@@ -24,7 +25,7 @@ public class DocumentService {
     // upload a document
     public Document addDocument(Document document, Long proposalId) {
         Proposal proposal = proposalRepository.findById(proposalId)
-                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found with ID: " + proposalId));
+                .orElseThrow(() -> new ProposalNotFoundException("Proposal not found with ID: " + proposalId));
 
         document.setProposal(proposal);
         document.setUploadDate(LocalDate.now());
@@ -40,7 +41,7 @@ public class DocumentService {
     // delete document by id
     public void deleteDocument(Integer documentId) {
         if (!documentRepository.existsById(documentId)) {
-            throw new ResourceNotFoundException("Document not found with ID: " + documentId);
+            throw new DocumentNotFoundException("Document not found with ID: " + documentId);
         }
         documentRepository.deleteById(documentId);
     }

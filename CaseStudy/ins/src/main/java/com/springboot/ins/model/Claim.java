@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "claim")
+@Table(name = "claims")
 public class Claim {
 
     @Id
@@ -20,7 +20,7 @@ public class Claim {
     private Integer claimId;
     
     @ManyToOne
-    private Policy policy;
+    private Proposal proposal;
 
     @ManyToOne
     private Customer customer;
@@ -33,70 +33,82 @@ public class Claim {
     
     @Column(name = "settlement_amount", nullable = false)
     private BigDecimal settlementAmount;
+    
+    @Column(name = "claim_status")
+    private boolean claimStatus;
 
     // Constructors 
-	public Claim() {
-		super();
-	}
-	
-	public Claim(Integer claimId, Policy policy, Customer customer, String incidentDescription, LocalDate claimDate,
-			BigDecimal settlementAmount) {
-		super();
-		this.claimId = claimId;
-		this.policy = policy;
-		this.customer = customer;
-		this.incidentDescription = incidentDescription;
-		this.claimDate = claimDate;
-		this.settlementAmount = settlementAmount;
-	}
+    public Claim() {
+        super();
+    }
 
-	// Getters and Setters
-	public Integer getClaimId() {
-		return claimId;
-	}
+    public Claim(Integer claimId, Proposal proposal, Customer customer, String incidentDescription, 
+                LocalDate claimDate, BigDecimal settlementAmount, boolean claimStatus) {
+        super();
+        this.claimId = claimId;
+        this.proposal = proposal;
+        this.customer = customer;
+        this.incidentDescription = incidentDescription;
+        this.claimDate = claimDate;
+        this.settlementAmount = settlementAmount;
+        this.claimStatus = claimStatus;
+    }
 
-	public void setClaimId(Integer claimId) {
-		this.claimId = claimId;
-	}
+    // Getters and Setters
+    public Integer getClaimId() {
+        return claimId;
+    }
 
-	public Policy getPolicy() {
-		return policy;
-	}
+    public void setClaimId(Integer claimId) {
+        this.claimId = claimId;
+    }
 
-	public void setPolicy(Policy policy) {
-		this.policy = policy;
-	}
+    public Proposal getProposal() {
+        return proposal;
+    }
 
-	public Customer getCustomer() {
-		return customer;
-	}
+    public void setProposal(Proposal proposal) {
+        this.proposal = proposal;
+    }
 
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
-	}
+    public Customer getCustomer() {
+        return customer;
+    }
 
-	public String getIncidentDescription() {
-		return incidentDescription;
-	}
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 
-	public void setIncidentDescription(String incidentDescription) {
-		this.incidentDescription = incidentDescription;
-	}
+    public String getIncidentDescription() {
+        return incidentDescription;
+    }
 
-	public LocalDate getClaimDate() {
-		return claimDate;
-	}
+    public void setIncidentDescription(String incidentDescription) {
+        this.incidentDescription = incidentDescription;
+    }
 
-	public void setClaimDate(LocalDate claimDate) {
-		this.claimDate = claimDate;
-	}
+    public LocalDate getClaimDate() {
+        return claimDate;
+    }
 
-	public BigDecimal getSettlementAmount() {
-		return settlementAmount;
-	}
+    public void setClaimDate(LocalDate claimDate) {
+        this.claimDate = claimDate;
+    }
 
-	public void setSettlementAmount(BigDecimal settlementAmount) {
-		this.settlementAmount = settlementAmount;
-	}
-	
+    public BigDecimal getSettlementAmount() {
+        return settlementAmount;
+    }
+
+    public void setSettlementAmount(BigDecimal settlementAmount) {
+        this.settlementAmount = settlementAmount;
+    }
+    
+    public boolean isClaimStatus() {
+        return claimStatus;
+    }
+
+    public void setClaimStatus(boolean claimStatus) {
+        this.claimStatus = claimStatus;
+    }
+    
 }

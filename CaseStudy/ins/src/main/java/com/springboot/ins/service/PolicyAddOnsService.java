@@ -1,6 +1,7 @@
 package com.springboot.ins.service;
 
-import com.springboot.ins.exception.ProposalNotFoundException;
+import com.springboot.ins.exception.PolicyAddOnsNotFoundException; 
+import com.springboot.ins.exception.PolicyNotFoundException;
 import com.springboot.ins.model.Policy;
 import com.springboot.ins.model.PolicyAddOns;
 import com.springboot.ins.repository.PolicyAddOnsRepository;
@@ -34,7 +35,7 @@ public class PolicyAddOnsService {
             addon.setPolicy(Policy.get());
             return policyAddOnsRepository.save(addon);
         }
-        throw new RuntimeException("Policy not found with ID: " + policyId);
+        throw new PolicyNotFoundException("Policy not found with ID: " + policyId);
     }
 	
     // get all policyAddOns
@@ -51,7 +52,7 @@ public class PolicyAddOnsService {
     public List<PolicyAddOns> getAddonsByPolicyId(Long policyId) {
         List<PolicyAddOns> list = policyAddOnsRepository.findByPolicyPolicyId(policyId);
         if (list == null || list.isEmpty()) {
-            throw new ProposalNotFoundException("No addons found for policy ID: " + policyId);
+            throw new PolicyNotFoundException("No addons found for policy ID: " + policyId);
         }
         return list;
     }
@@ -59,7 +60,7 @@ public class PolicyAddOnsService {
     // get policyAddOns by id 
     public PolicyAddOns getAddonById(Integer addonId) {
         return policyAddOnsRepository.findById(addonId)
-                .orElseThrow(() -> new RuntimeException("Addon not found with id " + addonId));
+                .orElseThrow(() -> new PolicyAddOnsNotFoundException("Addon not found with id " + addonId));
     }
     
 	// delete policyAddOns by id

@@ -10,6 +10,7 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
     @Query("SELECT a FROM Admin a WHERE a.user.username = ?1")
     Admin getAdminByUsername(String username);
 
+    @Query("DELETE FROM Admin a WHERE a.adminId = ?1")
     void deleteByAdminId(Long adminId);
     
 }

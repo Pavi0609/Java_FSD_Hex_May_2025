@@ -1,238 +1,316 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function Signup() {
+export const SignUp = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    customerName: '',
+    customerAddress: '',
+    customerDob: '',
+    customerAge: '',
+    customerAadharNo: '',
+    customerPanNo: '',
     username: '',
     password: '',
-    role: ''
+    confirmPassword: ''
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
-
-    try {
-      const response = await axios.post('http://localhost:8080/api/user/signup', {
-        username: formData.username,
-        password: formData.password,
-        role: formData.role
-      });
-
-      if (response.status === 200) {
-        setSuccess(true);
-        setTimeout(() => navigate('/login'), 2000);
+  // Calculate age when dob changes
+  useEffect(() => {
+    if (formData.customerDob) {
+      const dob = new Date(formData.customerDob);
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const monthDiff = today.getMonth() - dob.getMonth();
+      
+      // Adjust age if birthday hasn't occurred yet this year
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        age--;
       }
-    } catch (err) {
-      setError(err.response?.data?.message || 'Signup failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+      
+      setFormData(prev => ({
+        ...prev,
+        customerAge: age.toString()
+      }));
     }
-  };
+  }, [formData.customerDob]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
+    setFormData({
+      ...formData,
       [name]: value
-    }));
+    });
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.customerName.trim()) {
+      newErrors.customerName = 'Name is required';
+    }
+    
+    if (!formData.customerAddress.trim()) {
+      newErrors.customerAddress = 'Address is required';
+    }
+    
+    if (!formData.customerDob) {
+      newErrors.customerDob = 'Date of Birth is required';
+    } else {
+      const dob = new Date(formData.customerDob);
+      const today = new Date();
+      if (dob > today) {
+        newErrors.customerDob = 'Date of Birth cannot be in the future';
+      }
+    }
+    
+    if (!formData.customerAadharNo || !/^\d{12}$/.test(formData.customerAadharNo)) {
+      newErrors.customerAadharNo = 'Valid 12-digit Aadhar number is required';
+    }
+    
+    if (!formData.customerPanNo || !/^[A-Z]{5}\d{4}[A-Z]{1}$/.test(formData.customerPanNo)) {
+      newErrors.customerPanNo = 'Valid PAN number is required (format: ABCDE1234F)';
+    }
+    
+    if (!formData.username || !/^\S+@\S+\.\S+$/.test(formData.username)) {
+      newErrors.username = 'Valid email is required';
+    }
+    
+    if (!formData.password || formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      const payload = {
+        customerName: formData.customerName,
+        customerAddress: formData.customerAddress,
+        customerDob: formData.customerDob,
+        customerAge: parseInt(formData.customerAge),
+        customerAadharNo: formData.customerAadharNo,
+        customerPanNo: formData.customerPanNo,
+        user: {
+          username: formData.username,
+          password: formData.password,
+          role: "CUSTOMER"
+        }
+      };
+      
+      const response = await axios.post('http://localhost:8080/api/customer/add', payload);
+      
+      if (response.status === 200) {
+        alert('Registration successful! Please login.');
+        navigate('/login');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert(error.response?.data?.message || 'Registration failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div style={styles.pageContainer}>
-      <div style={styles.signupContainer}>
-        <div style={styles.signupCard}>
-          <h1 style={styles.signupHeader}>CREATE ACCOUNT</h1>
-          
-          {success && (
-            <div style={styles.successAlert}>
-              Account created successfully! Redirecting to login...
-            </div>
-          )}
-          
-          {error && (
-            <div style={styles.errorAlert}>
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit}>
-            <div style={styles.formGroup}>
-              <h2 style={styles.label}>Username</h2>
-              <input
-                type="email"
-                name="username"
-                style={styles.input}
-                value={formData.username}
-                onChange={handleChange}
-                required
-                placeholder="Enter your email"
-              />
-            </div>
-
-            <div style={styles.formGroup}>
-              <h2 style={styles.label}>Password</h2>
-              <input
-                type="password"
-                name="password"
-                style={styles.input}
-                value={formData.password}
-                onChange={handleChange}
-                required
-                minLength="20"
-                placeholder="Create a password"
-              />
-              <small style={styles.hintText}>Minimum 20 characters</small>
-            </div>
-
-            <div style={styles.formGroup}>
-              <h2 style={styles.label}>User Role</h2>
-              <select
-                name="role"
-                style={styles.input}
-                value={formData.role}
-                onChange={handleChange}
-                required
-              >
-                <option value="CUSTOMER">Customer</option>
-                <option value="ADMIN">Admin</option>
-              </select>
-            </div>
-
-            <button 
-              type="submit" 
-              style={styles.signupButton}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Creating Account...' : 'SIGN UP'}
-            </button>
-          </form>
-
-          <div style={styles.loginPrompt}>
-            Already have an account?
-            <button 
-              style={styles.loginLink}
-              onClick={() => navigate('/login')}
-            >
-              Log in
-            </button>
-          </div>
+    <div className="signup-container">
+      <h2>Create Your Account</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Full Name</label>
+          <input
+            type="text"
+            name="customerName"
+            value={formData.customerName}
+            onChange={handleChange}
+            placeholder="Enter your full name"
+          />
+          {errors.customerName && <span className="error">{errors.customerName}</span>}
         </div>
-      </div>
+
+        <div className="form-group">
+          <label>Address</label>
+          <input
+            type="text"
+            name="customerAddress"
+            value={formData.customerAddress}
+            onChange={handleChange}
+            placeholder="Enter your address"
+          />
+          {errors.customerAddress && <span className="error">{errors.customerAddress}</span>}
+        </div>
+
+        <div className="form-group">
+          <label>Date of Birth</label>
+          <input
+            type="date"
+            name="customerDob"
+            value={formData.customerDob}
+            onChange={handleChange}
+            max={new Date().toISOString().split('T')[0]} // Prevent future dates
+          />
+          {errors.customerDob && <span className="error">{errors.customerDob}</span>}
+        </div>
+
+        <div className="form-group">
+          <label>Age</label>
+          <input
+            type="number"
+            name="customerAge"
+            value={formData.customerAge}
+            onChange={handleChange}
+            placeholder="Auto-calculated from DOB"
+            readOnly
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Aadhar Number</label>
+          <input
+            type="text"
+            name="customerAadharNo"
+            value={formData.customerAadharNo}
+            onChange={handleChange}
+            placeholder="Enter 12-digit Aadhar number"
+            maxLength="12"
+          />
+          {errors.customerAadharNo && <span className="error">{errors.customerAadharNo}</span>}
+        </div>
+
+        <div className="form-group">
+          <label>PAN Number</label>
+          <input
+            type="text"
+            name="customerPanNo"
+            value={formData.customerPanNo}
+            onChange={handleChange}
+            placeholder="Enter PAN number (e.g., ABCDE1234F)"
+            maxLength="10"
+          />
+          {errors.customerPanNo && <span className="error">{errors.customerPanNo}</span>}
+        </div>
+
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            placeholder="Enter your email"
+          />
+          {errors.username && <span className="error">{errors.username}</span>}
+        </div>
+
+        <div className="form-group">
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Enter password (min 6 characters)"
+          />
+          {errors.password && <span className="error">{errors.password}</span>}
+        </div>
+
+        <div className="form-group">
+          <label>Confirm Password</label>
+          <input
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            placeholder="Confirm your password"
+          />
+          {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
+        </div>
+
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Registering...' : 'Register'}
+        </button>
+      </form>
+
+      <style jsx>{`
+        .signup-container {
+          max-width: 500px;
+          margin: 2rem auto;
+          padding: 2rem;
+          background: #fff;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+          text-align: center;
+          margin-bottom: 1.5rem;
+          color: #2c3e50;
+        }
+        .form-group {
+          margin-bottom: 1.5rem;
+        }
+        label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+          color: #2c3e50;
+        }
+        input {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          font-size: 1rem;
+        }
+        input:focus {
+          outline: none;
+          border-color: #3498db;
+        }
+        input[readonly] {
+          background-color: #f5f5f5;
+          cursor: not-allowed;
+        }
+        .error {
+          color: #e74c3c;
+          font-size: 0.875rem;
+          margin-top: 0.25rem;
+          display: block;
+        }
+        button {
+          width: 100%;
+          padding: 0.75rem;
+          background-color: #2c3e50;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: background-color 0.3s;
+        }
+        button:hover {
+          background-color: #1a252f;
+        }
+        button:disabled {
+          background-color: #95a5a6;
+          cursor: not-allowed;
+        }
+      `}</style>
     </div>
   );
-}
-
-// Style.CSS
-const styles = {
-  pageContainer: {
-    backgroundColor: '#f8f9fa',
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: '20px',
-    margin: 0
-  },
-  signupContainer: {
-    width: '100%',
-    maxWidth: '500px'
-  },
-  signupCard: {
-    backgroundColor: 'white',
-    borderRadius: '8px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-    padding: '40px',
-    width: '100%'
-  },
-  signupHeader: {
-    color: '#2c3e50',
-    fontSize: '24px',
-    marginBottom: '30px',
-    textAlign: 'center'
-  },
-  formGroup: {
-    marginBottom: '25px'
-  },
-  label: {
-    color: '#2c3e50',
-    fontSize: '18px',
-    marginBottom: '10px',
-    fontWeight: '500'
-  },
-  input: {
-    width: '100%',
-    padding: '12px',
-    border: '1px solid #ddd',
-    borderRadius: '6px',
-    fontSize: '16px'
-  },
-  hintText: {
-    color: '#7f8c8d',
-    fontSize: '14px',
-    marginTop: '5px',
-    display: 'block'
-  },
-  signupButton: {
-    backgroundColor: '#2c3e50',
-    color: 'white',
-    border: 'none',
-    padding: '14px',
-    borderRadius: '6px',
-    width: '100%',
-    fontSize: '16px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    marginTop: '10px',
-    transition: 'background-color 0.3s',
-    ':hover': {
-      backgroundColor: '#1a2634'
-    },
-    ':disabled': {
-      backgroundColor: '#95a5a6',
-      cursor: 'not-allowed'
-    }
-  },
-  successAlert: {
-    backgroundColor: '#e8f5e9',
-    color: '#2e7d32',
-    padding: '12px',
-    borderRadius: '6px',
-    marginBottom: '25px',
-    textAlign: 'center'
-  },
-  errorAlert: {
-    backgroundColor: '#ffebee',
-    color: '#c62828',
-    padding: '12px',
-    borderRadius: '6px',
-    marginBottom: '25px',
-    textAlign: 'center'
-  },
-  loginPrompt: {
-    textAlign: 'center',
-    marginTop: '30px',
-    color: '#7f8c8d'
-  },
-  loginLink: {
-    backgroundColor: 'transparent',
-    color: '#e74c3c',
-    border: 'none',
-    padding: '0 5px',
-    fontSize: 'inherit',
-    fontWeight: '600',
-    cursor: 'pointer',
-    textDecoration: 'underline',
-    ':hover': {
-      color: '#c0392b'
-    }
-  }
 };
-
-export default Signup;

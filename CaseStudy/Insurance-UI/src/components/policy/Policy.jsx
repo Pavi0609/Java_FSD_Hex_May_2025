@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPolicies } from '../../store/actions/PolicyAction';
-import AdminAppBar from '../admin/AdminAppBar';
+import AdminAppBar from '../admin/AdminAppbar';
 
 function Policy() {
   const dispatch = useDispatch();

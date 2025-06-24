@@ -24,4 +24,25 @@ export const fetchPolicies = () => async (dispatch) => {
       payload: error.message
     });
   }
-};
+}
+
+
+export const deletePolicy = (policyId) => async (dispatch) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    await axios.delete(`http://localhost:8080/api/policy/delete/${policyId}`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    
+    // Refresh policies after deletion
+    dispatch(fetchPolicies());
+    
+  } catch (error) {
+    console.error("Error deleting policy:", error);
+    throw error;
+  }
+}

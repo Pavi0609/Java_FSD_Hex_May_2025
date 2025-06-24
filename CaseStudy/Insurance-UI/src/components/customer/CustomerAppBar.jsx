@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const AdminAppBar = () => {
+const CustomerAppBar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -11,12 +11,22 @@ const AdminAppBar = () => {
 
   return (
     <header style={styles.appBar}>
-      <div style={styles.logo}> POLICY INSURANCE COMPANY </div>
+      <div style={styles.logo} onClick={() => navigate('/dashboard')}>
+        POLICY INSURANCE COMPANY 
+      </div>
       <nav style={styles.nav}>
-        <a href="/admin" style={styles.navLink}>Dashboard</a>
-        <a href="/addPolicy" style={styles.navLink}>Add Policy</a>
-        <a href="/addPolicyAddOns" style={styles.navLink}>Add PolicyAddOns</a>
-        <a href="/adminProfile" style={styles.navLink}>Profile</a>
+        <button 
+          style={styles.navButton}
+          onClick={() => navigate('/customerDashboard')}
+        >
+          Dashboard
+        </button>
+        <button 
+          style={styles.navButton}
+          onClick={() => navigate('/customerProfile')}
+        >
+          Profile
+        </button>
         <button 
           style={styles.logoutButton}
           onClick={handleLogout}
@@ -28,7 +38,6 @@ const AdminAppBar = () => {
   );
 };
 
-// Style.CSS
 const styles = {
   appBar: {
     backgroundColor: '#2c3e50',
@@ -42,19 +51,24 @@ const styles = {
   },
   logo: {
     fontSize: '20px',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    color: 'white', // Keeping your original brand color
+    letterSpacing: '0.5px'
   },
   nav: {
     display: 'flex',
     gap: '20px',
     alignItems: 'center'
   },
-  navLink: {
+  navButton: {
+    backgroundColor: 'transparent',
     color: 'white',
-    textDecoration: 'none',
-    fontSize: '16px',
-    padding: '5px 10px',
+    border: 'none',
+    padding: '8px 15px',
     borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '16px',
     transition: 'background-color 0.3s',
     ':hover': {
       backgroundColor: '#34495e'
@@ -75,4 +89,4 @@ const styles = {
   }
 };
 
-export default AdminAppBar;
+export default CustomerAppBar;

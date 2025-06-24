@@ -1,24 +1,20 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-export const Claim = () => {
-  const [claims, setClaims] = useState([]);
+export const Payment = () => {
+  const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
-
-  // Get token from localStorage
-  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    const fetchClaims = async () => {
+    const fetchPayments = async () => {
       try {
+        const token = localStorage.getItem('token');
         const response = await axios.get(
-          'http://localhost:8080/api/claims/get-all',
+          'http://localhost:8080/api/payments_new/get-all',
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        setClaims(response.data);
+        setPayments(response.data);
         setLoading(false);
       } catch (err) {
         setError(err.response?.data?.message || err.message);
@@ -26,27 +22,8 @@ export const Claim = () => {
       }
     };
 
-    fetchClaims();
-  }, [token]);
-
-  const handleStatusUpdate = async (claimId, newStatus) => {
-    try {
-      await axios.put(
-        `http://localhost:8080/api/claims/update-status/${claimId}?newStatus=${newStatus}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
-      // Refresh the claims list after update
-      const response = await axios.get(
-        'http://localhost:8080/api/claims/get-all',
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setClaims(response.data);
-    } catch (err) {
-      setError(err.response?.data?.message || err.message);
-    }
-  };
+    fetchPayments();
+  }, []);
 
   if (loading) {
     return (
@@ -72,7 +49,7 @@ export const Claim = () => {
   }
 
   return (
-    <div className="claim-container">
+    <div className="payment-container">
       <style>
         {`
           .loading-spinner {
@@ -105,6 +82,7 @@ export const Claim = () => {
           
           .error-title {
             font-weight: bold;
+            margin-bottom: 0.5rem;
           }
           
           .retry-button {
@@ -112,15 +90,19 @@ export const Claim = () => {
             padding: 0.5rem 1rem;
             background-color: #ef4444;
             color: white;
+            border: none;
             border-radius: 0.25rem;
+            cursor: pointer;
           }
           
           .retry-button:hover {
             background-color: #dc2626;
           }
           
-          .claim-container {
+          .payment-container {
             padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
           }
           
           .header-container {
@@ -145,7 +127,7 @@ export const Claim = () => {
           .data-table {
             width: 100%;
             background-color: white;
-            border: 1px solid #e5e7eb;
+            border-collapse: collapse;
           }
           
           .table-header {
@@ -154,10 +136,10 @@ export const Claim = () => {
           
           .table-header-cell {
             padding: 0.75rem 1rem;
-            border-bottom: 1px solid #e5e7eb;
             text-align: left;
             font-weight: 500;
             color: #374151;
+            border-bottom: 1px solid #e5e7eb;
           }
           
           .table-row {
@@ -169,9 +151,10 @@ export const Claim = () => {
           }
           
           .table-cell {
-            padding: 1rem 1rem;
+            padding: 1rem;
             font-size: 0.875rem;
             color: #374151;
+            border-bottom: 1px solid #e5e7eb;
           }
           
           .customer-name {
@@ -198,112 +181,79 @@ export const Claim = () => {
             color: #92400e;
           }
           
-          .status-approved {
+          .status-paid {
             background-color: #d1fae5;
             color: #065f46;
           }
           
-          .action-buttons {
-            display: flex;
-            gap: 0.5rem;
+          .amount-cell {
+            font-weight: 600;
           }
           
-          .accept-button {
-            padding: 0.25rem 0.75rem;
-            background-color: #22c55e;
-            color: white;
-            border-radius: 0.375rem;
-            border: none;
-            cursor: pointer;
-          }
-          
-          .accept-button:hover {
-            background-color: #16a34a;
-          }
-          
-          .reject-button {
-            padding: 0.25rem 0.75rem;
-            background-color: #ef4444;
-            color: white;
-            border-radius: 0.375rem;
-            border: none;
-            cursor: pointer;
-          }
-          
-          .reject-button:hover {
-            background-color: #dc2626;
-          }
-          
-          .processed-text {
-            font-size: 0.875rem;
-            color: #6b7280;
+          .method-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: #e0e7ff;
+            color: #4338ca;
           }
         `}
       </style>
       
       <div className="header-container">
-        <h1 className="header-title">Claims Management</h1>
+        <h1 className="header-title">Payment Management</h1>
       </div>
       
       <div className="table-container">
         <table className="data-table">
           <thead className="table-header">
             <tr>
-              <th className="table-header-cell">Claim ID</th>
+              <th className="table-header-cell">Payment ID</th>
               <th className="table-header-cell">Customer</th>
               <th className="table-header-cell">Vehicle</th>
-              <th className="table-header-cell">Incident</th>
               <th className="table-header-cell">Date</th>
               <th className="table-header-cell">Amount</th>
+              <th className="table-header-cell">Method</th>
               <th className="table-header-cell">Status</th>
-              <th className="table-header-cell">Actions</th>
             </tr>
           </thead>
           
           <tbody>
-            {claims.map((claim) => (
-              <tr key={claim.claimId} className="table-row">
-                <td className="table-cell">{claim.claimId}</td>
+            {payments.map((payment) => (
+              <tr key={payment.paymentId} className="table-row">
+                <td className="table-cell">{payment.paymentId}</td>
                 <td className="table-cell">
-                  <div className="customer-name">{claim.customer.customerName}</div>
-                  <div className="customer-details">{claim.customer.customerAddress}</div>
+                  <div className="customer-name">{payment.customer.customerName}</div>
+                  <div className="customer-details">{payment.customer.customerAddress}</div>
                 </td>
                 <td className="table-cell">
-                  <div className="customer-name">{claim.proposal.vehicleType}</div>
-                  <div className="customer-details">{claim.proposal.vehicleModel} ({claim.proposal.registrationNumber})</div>
+                  {payment.proposal ? (
+                    <>
+                      <div className="customer-name">{payment.proposal.vehicleType}</div>
+                      <div className="customer-details">
+                        {payment.proposal.vehicleModel} ({payment.proposal.registrationNumber})
+                      </div>
+                    </>
+                  ) : (
+                    <div className="customer-details">No vehicle info</div>
+                  )}
                 </td>
-                <td className="table-cell">{claim.incidentDescription}</td>
-                <td className="table-cell">{new Date(claim.claimDate).toLocaleDateString()}</td>
-                <td className="table-cell">₹{claim.settlementAmount.toFixed(2)}</td>
+                <td className="table-cell">{new Date(payment.paymentDate).toLocaleDateString()}</td>
+                <td className="table-cell amount-cell">₹{payment.amountPaid.toFixed(2)}</td>
                 <td className="table-cell">
-                  <span className={`status-badge ${
-                    claim.claimStatus ? 'status-approved' : 'status-pending'
-                  }`}>
-                    {claim.claimStatus ? 'Approved' : 'Pending'}
+                  <span className="method-badge">
+                    {payment.paymentMethod.replace('_', ' ')}
                   </span>
                 </td>
                 <td className="table-cell">
-                  <div className="action-buttons">
-                    {!claim.claimStatus && (
-                      <>
-                        <button
-                          onClick={() => handleStatusUpdate(claim.claimId, true)}
-                          className="accept-button"
-                        >
-                          Accept
-                        </button>
-                        <button
-                          onClick={() => handleStatusUpdate(claim.claimId, false)}
-                          className="reject-button"
-                        >
-                          Reject
-                        </button>
-                      </>
-                    )}
-                    {claim.claimStatus && (
-                      <span className="processed-text">Processed</span>
-                    )}
-                  </div>
+                  <span className={`status-badge ${
+                    payment.paymentStatus === 'PAID' ? 'status-paid' : 'status-pending'
+                  }`}>
+                    {payment.paymentStatus}
+                  </span>
                 </td>
               </tr>
             ))}

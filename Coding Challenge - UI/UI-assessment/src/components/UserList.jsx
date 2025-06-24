@@ -56,15 +56,14 @@ function UserList() {
           Authorization: `Bearer ${API_TOKEN}`
         }
       });
+
       // methods to remove the deleted user
       setUsers(users.filter(user => user.id !== userId));
       setMessage('User deleted successfully');
-      setTimeout(() => setMessage(''), 2000);
 
     } catch (error) {
       console.error('Error deleting user:', error);
       setMessage('Failed to delete user');
-      setTimeout(() => setMessage(''), 2000);
     }
 
   };
@@ -108,12 +107,10 @@ function UserList() {
       
       setEditingId(null);
       setMessage('User updated successfully');
-      setTimeout(() => setMessage(''), 3000);
 
     } catch (error) {
       console.error('Error updating user:', error);
       setMessage('Failed to update user');
-      setTimeout(() => setMessage(''), 3000);
     }
 
   };
@@ -128,18 +125,19 @@ function UserList() {
       textAlign: 'center', 
       padding: '40px',
       fontSize: '1.2rem'
-    }}>
+    }} >
       Loading users...
     </div>
   );
 
 
   return (
+
     <div className="user-list-container">
           <div className="user-list-header">
               <h2>User Management</h2>
               <button
-                  onClick={() => navigate('/add-user')} // Adjust the route as needed
+                  onClick={() => navigate('/add-user')} 
                   style={{
                       padding: '8px 16px',
                       background: 'green',
@@ -149,7 +147,7 @@ function UserList() {
                       cursor: 'pointer',
                       fontWeight: 'bold'
                   }} >
-                  Add User Page 
+                  Go to AddUser Page 
               </button>
           </div>  
       

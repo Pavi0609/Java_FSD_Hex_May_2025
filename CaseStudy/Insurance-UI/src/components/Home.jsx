@@ -1,9 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import HomeAppBar from './HomeAppBar';
-import carImage from '../assets/car-image.png';
+import carImage from '../assets/car-insurance.png';
 
 const Home = () => {
+  
   const navigate = useNavigate();
 
   return (
@@ -25,12 +26,8 @@ const Home = () => {
             </div>
           </div>
           <div style={styles.ctaContainer}>
-            <button style={styles.primaryButton} onClick={() => navigate('/quote')}>
-              Get Instant Quote
-            </button>
-            <button style={styles.secondaryButton} onClick={() => navigate('/plans')}>
-              View all plans →
-            </button>
+            <button style={styles.primaryButton} onClick={() => navigate('/login')}> Get Instant Quote </button>
+            <button style={styles.secondaryButton} onClick={() => navigate('/viewPolicy')}> View all plans → </button>
           </div>
         </div>
         <div style={styles.heroImage}>
@@ -44,9 +41,7 @@ const Home = () => {
           <h2 style={styles.claimTitle}>Accident Repairs Needed?</h2>
           <h3 style={styles.claimSubtitle}>YOU'RE HOW COVERED</h3>
           <p style={styles.claimText}>No need to wait 24-hours for claim anymore!</p>
-          <button style={styles.claimButton} onClick={() => navigate('/claims')}>
-            Learn about claims →
-          </button>
+          <button style={styles.claimButton} onClick={() => navigate('/login')}> Learn about claims → </button>
         </div>
       </div>
 
@@ -132,6 +127,7 @@ const Home = () => {
 };
 
 const styles = {
+  
   container: {
     fontFamily: "'Inter', sans-serif",
     color: '#1f2937',
@@ -153,13 +149,15 @@ const styles = {
     textAlign: 'left',
   },
   heroTitle: {
-    fontSize: '2.5rem',
+    color: 'white',
+    fontSize: '2.1rem',
     fontWeight: 700,
     marginBottom: '1.5rem',
     lineHeight: 1.2,
   },
   highlight: {
     color: '#fbbf24',
+    fontSize: '2.5rem'
   },
   heroBullets: {
     margin: '2rem 0',
@@ -224,7 +222,7 @@ const styles = {
     },
   },
   claimBanner: {
-    backgroundColor: '#fffbeb',
+    backgroundColor: '#ffffc5',
     padding: '3rem 2rem',
     margin: '3rem auto',
     maxWidth: '1200px',

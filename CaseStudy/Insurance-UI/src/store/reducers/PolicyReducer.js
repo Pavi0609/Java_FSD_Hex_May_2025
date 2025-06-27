@@ -7,6 +7,7 @@ const initialState = {
 };
 
 const policyReducer = (state = initialState, action) => {
+  
   switch (action.type) {
     case 'FETCH_POLICIES_REQUEST':
       return {

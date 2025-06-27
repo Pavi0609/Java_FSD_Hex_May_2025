@@ -63,9 +63,9 @@ public class ClaimService {
         return claimRepository.findAll(pageable).getContent();
     }
 
-    // Get claims by customer ID
-    public List<Claim> getClaimsByCustomerId(Long customerId) {
-        return claimRepository.findByCustomerId(customerId);
+    // get proposal by id (using token)
+    public List<Claim> getClaimsByUsername(String username) {
+        return claimRepository.findByCustomerUsername(username);              
     }
 
     // Get claims by proposal ID

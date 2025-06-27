@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import CustomerAppBar from './CustomerAppBar';
 
 const CustomerCreateProposal = () => {
+
   const vehicleTypes = ['Car', 'Bike', 'Truck', 'Camper Van'];
   
   const [formData, setFormData] = useState({
@@ -34,6 +35,7 @@ const CustomerCreateProposal = () => {
 
   // Fetch customer profile and available policies
   useEffect(() => {
+
     const fetchData = async () => {
       try {
         // Fetch customer profile to get customerId
@@ -43,8 +45,7 @@ const CustomerCreateProposal = () => {
         // Fetch all policies
         const policiesResponse = await api.get('/policy/get-all');
         setPolicies(policiesResponse.data);
-        setFilteredPolicies(policiesResponse.data.filter(policy => policy.policyStatus === 'ACTIVE'));
-        
+        setFilteredPolicies(policiesResponse.data.filter(policy => policy.policyStatus === 'ACTIVE'));  
         setLoading(false);
       } catch (err) {
         setError(err.response?.data?.message || err.message);
@@ -80,8 +81,7 @@ const CustomerCreateProposal = () => {
     setSubmissionStatus('submitting');
 
     try {
-      await api.post(
-        `/proposal/add/${customerId}/${formData.policyId}`,
+      await api.post(`/proposal/add/${customerId}/${formData.policyId}`,
         {
           vehicleType: formData.vehicleType,
           vehicleModel: formData.vehicleModel,
@@ -103,6 +103,7 @@ const CustomerCreateProposal = () => {
   };
 
   const styles = {
+
     container: {
       maxWidth: '800px',
       margin: '0 auto',
@@ -232,8 +233,7 @@ const CustomerCreateProposal = () => {
               value={formData.vehicleType}
               onChange={handleInputChange}
               style={styles.select}
-              required
-            >
+              required>
               <option value="">Select Vehicle Type</option>
               {vehicleTypes.map(type => (
                 <option key={type} value={type}>{type}</option>
@@ -250,8 +250,7 @@ const CustomerCreateProposal = () => {
               onChange={handleInputChange}
               style={styles.input}
               placeholder="e.g., Winnebago Revel 44E"
-              required
-            />
+              required/>
           </div>
           
           <div style={styles.formGroup}>
@@ -263,8 +262,7 @@ const CustomerCreateProposal = () => {
               onChange={handleInputChange}
               style={styles.input}
               placeholder="e.g., MH05CV2028"
-              required
-            />
+              required/>
           </div>
           
           <div style={styles.formGroup}>
@@ -276,8 +274,7 @@ const CustomerCreateProposal = () => {
               onChange={handleInputChange}
               style={styles.input}
               placeholder="e.g., 2022"
-              required
-            />
+              required/>
           </div>
           
           <div style={styles.formGroup}>
@@ -291,8 +288,8 @@ const CustomerCreateProposal = () => {
                       ...styles.policyCard,
                       ...(formData.policyId === policy.policyId.toString() ? styles.policyCardSelected : {})
                     }}
-                    onClick={() => setFormData({...formData, policyId: policy.policyId.toString()})}
-                  >
+                    onClick={() => setFormData({...formData, policyId: policy.policyId.toString()})}>
+
                     <div style={styles.policyTitle}>{policy.policyName}</div>
                     <div style={styles.policyDetails}>
                       <span>Premium: ₹{policy.premiumAmount}</span>
@@ -300,6 +297,7 @@ const CustomerCreateProposal = () => {
                     </div>
                   </div>
                 ))
+
               ) : (
                 <div style={{ padding: '15px', textAlign: 'center', color: '#555' }}>
                   {formData.vehicleType 
@@ -310,11 +308,7 @@ const CustomerCreateProposal = () => {
             </div>
           </div>
           
-          <button
-            type="submit"
-            style={styles.submitButton}
-            disabled={submissionStatus === 'submitting' || !formData.policyId}
-          >
+          <button type="submit" style={styles.submitButton} disabled={submissionStatus === 'submitting' || !formData.policyId}>
             {submissionStatus === 'submitting' ? 'Submitting...' : 'Submit Proposal'}
           </button>
         </form>

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 
 export const AddPolicyAddOns = () => {
+
   const [formData, setFormData] = useState({
     policyId: '',
     addonName: '',
     description: '',
     additionalPremium: ''
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -35,13 +37,12 @@ export const AddPolicyAddOns = () => {
         throw new Error('Policy ID is required');
       }
 
-      const response = await fetch(
-        `http://localhost:8080/api/policy-addons/add/policy/${formData.policyId}`,
+      const response = await fetch(`http://localhost:8080/api/policy-addons/add/policy/${formData.policyId}`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            "Authorization": "Bearer " + token
           },
           body: JSON.stringify({
             addonName: formData.addonName,
@@ -155,7 +156,7 @@ export const AddPolicyAddOns = () => {
       
       <form onSubmit={handleSubmit} style={styles.form}>
         <div style={styles.formGroup}>
-          <label htmlFor="policyId" style={styles.label}>Policy ID:</label>
+          <label htmlFor="policyId" style={styles.label}> Policy ID: </label>
           <input
             type="text"
             id="policyId"
@@ -163,12 +164,11 @@ export const AddPolicyAddOns = () => {
             value={formData.policyId}
             onChange={handleChange}
             required
-            style={styles.input}
-          />
+            style={styles.input}/>
         </div>
         
         <div style={styles.formGroup}>
-          <label htmlFor="addonName" style={styles.label}>Add-On Name:</label>
+          <label htmlFor="addonName" style={styles.label}> Add-On Name: </label>
           <input
             type="text"
             id="addonName"
@@ -176,24 +176,22 @@ export const AddPolicyAddOns = () => {
             value={formData.addonName}
             onChange={handleChange}
             required
-            style={styles.input}
-          />
+            style={styles.input}/>
         </div>
         
         <div style={styles.formGroup}>
-          <label htmlFor="description" style={styles.label}>Description:</label>
+          <label htmlFor="description" style={styles.label}> Description: </label>
           <textarea
             id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}
             required
-            style={{...styles.input, ...styles.textarea}}
-          />
+            style={{...styles.input, ...styles.textarea}}/>
         </div>
         
         <div style={styles.formGroup}>
-          <label htmlFor="additionalPremium" style={styles.label}>Additional Premium:</label>
+          <label htmlFor="additionalPremium" style={styles.label}> Additional Premium: </label>
           <input
             type="number"
             id="additionalPremium"
@@ -203,8 +201,7 @@ export const AddPolicyAddOns = () => {
             step="0.01"
             min="0"
             required
-            style={styles.input}
-          />
+            style={styles.input}/>
         </div>
         
         <button 
@@ -215,8 +212,7 @@ export const AddPolicyAddOns = () => {
             ...(isSubmitting ? styles.submitButtonDisabled : {})
           }}
           onMouseOver={(e) => !isSubmitting && (e.target.style.backgroundColor = styles.submitButtonHover.backgroundColor)}
-          onMouseOut={(e) => !isSubmitting && (e.target.style.backgroundColor = styles.submitButton.backgroundColor)}
-        >
+          onMouseOut={(e) => !isSubmitting && (e.target.style.backgroundColor = styles.submitButton.backgroundColor)}>
           {isSubmitting ? 'Adding...' : 'Add Policy Add-On'}
         </button>
       </form>

@@ -1,6 +1,7 @@
 import axios from "axios";
 
-export const fetchPolicies = () => async (dispatch) => {
+export const fetchPolicies = () => async (dispatch) => {  
+
   try {
     dispatch({ type: 'FETCH_POLICIES_REQUEST' });
     
@@ -10,7 +11,7 @@ export const fetchPolicies = () => async (dispatch) => {
     }
 
     const response = await axios.get('http://localhost:8080/api/policy/get-all', {
-      headers: { "Authorization": `Bearer ${token}` }
+      headers: { "Authorization": "Bearer " + token }
     });
     
     dispatch({
@@ -28,6 +29,7 @@ export const fetchPolicies = () => async (dispatch) => {
 
 
 export const deletePolicy = (policyId) => async (dispatch) => {
+  
   try {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -35,7 +37,7 @@ export const deletePolicy = (policyId) => async (dispatch) => {
     }
 
     await axios.delete(`http://localhost:8080/api/policy/delete/${policyId}`, {
-      headers: { "Authorization": `Bearer ${token}` }
+      headers: { "Authorization": "Bearer " + token }
     });
     
     // Refresh policies after deletion
@@ -45,4 +47,5 @@ export const deletePolicy = (policyId) => async (dispatch) => {
     console.error("Error deleting policy:", error);
     throw error;
   }
+  
 }

@@ -62,8 +62,14 @@ public class PolicyService {
 	}
 	
 	// delete policy by id
+	@Transactional
 	public void deleteByPolicyId(Long policyId) {
-		policyRepository.deleteByPolicyId(policyId);
+	    // First check if the policy exists
+	    if (!policyRepository.existsById(policyId)) {
+	        throw new PolicyNotFoundException("Policy not found with id: " + policyId);
+	    }
+	    // Use the correct delete method
+	    policyRepository.deleteById(policyId);
 	}
-	
+
 }

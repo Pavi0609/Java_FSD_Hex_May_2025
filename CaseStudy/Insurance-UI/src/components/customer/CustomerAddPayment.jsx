@@ -4,18 +4,21 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import CustomerAppBar from './CustomerAppBar';
 
 const CustomerAddPayment = () => {
+
   const [paymentData, setPaymentData] = useState({
     amountPaid: 0,
     paymentMethod: 'CREDIT_CARD',
     paymentStatus: 'PAID',
-    paymentDate: new Date().toISOString().split('T')[0] // Current date in YYYY-MM-DD format
+    paymentDate: new Date().toISOString().split('T')[0]
   });
+
   const [cardDetails, setCardDetails] = useState({
     cardNumber: '',
     expiryDate: '',
     cvv: '',
     cardholderName: ''
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -27,6 +30,7 @@ const CustomerAddPayment = () => {
   const customerId = localStorage.getItem('customerId');
 
   useEffect(() => {
+
     if (!quoteId || !amount || !proposalId || !customerId) {
       navigate('/quotes');
     } else {
@@ -68,9 +72,7 @@ const CustomerAddPayment = () => {
       const token = localStorage.getItem('token');
       
       // Process payment with the new API endpoint
-      const paymentResponse = await axios.post(
-        `http://localhost:8080/api/payments_new/add/customer/${customerId}?proposalId=${proposalId}&quoteId=${quoteId}`,
-        paymentData,
+      const paymentResponse = await axios.post(`http://localhost:8080/api/payments_new/add/customer/${customerId}?proposalId=${proposalId}&quoteId=${quoteId}`, paymentData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -81,17 +83,12 @@ const CustomerAddPayment = () => {
 
       // Update proposal status if payment was successful
       if (paymentResponse.data.paymentStatus === 'COMPLETED') {
-        await axios.put(
-          `http://localhost:8080/api/proposal/update-status/${proposalId}?newStatus=true`,
-          {},
+        await axios.put(`http://localhost:8080/api/proposal/update-status/${proposalId}?newStatus=true`,{},
           {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
+            headers: { "Authorization": "Bearer " + token }
           }
         );
       }
-
       setSuccess(true);
       setTimeout(() => navigate('/customerDashboard'), 2000);
     } catch (err) {
@@ -262,8 +259,7 @@ const CustomerAddPayment = () => {
                   value={paymentData.paymentMethod}
                   onChange={handlePaymentChange}
                   style={styles.select}
-                  required
-                >
+                  required>
                   <option value="CREDIT_CARD">Credit Card</option>
                   <option value="DEBIT_CARD">Debit Card</option>
                   <option value="NET_BANKING">Net Banking</option>
@@ -281,8 +277,7 @@ const CustomerAddPayment = () => {
                   value={cardDetails.cardNumber}
                   onChange={handleCardChange}
                   style={styles.input}
-                  required
-                />
+                  required/>
               </div>
               
               <div style={styles.cardInputGroup}>
@@ -295,9 +290,9 @@ const CustomerAddPayment = () => {
                     value={cardDetails.expiryDate}
                     onChange={handleCardChange}
                     style={styles.input}
-                    required
-                  />
+                    required/>
                 </div>
+
                 <div style={styles.cardInputHalf}>
                   <label style={styles.label}>CVV</label>
                   <input
@@ -307,8 +302,7 @@ const CustomerAddPayment = () => {
                     value={cardDetails.cvv}
                     onChange={handleCardChange}
                     style={styles.input}
-                    required
-                  />
+                    required/>
                 </div>
               </div>
               
@@ -321,15 +315,10 @@ const CustomerAddPayment = () => {
                   value={cardDetails.cardholderName}
                   onChange={handleCardChange}
                   style={styles.input}
-                  required
-                />
+                  required/>
               </div>
               
-              <button
-                type="submit"
-                style={styles.submitButton}
-                disabled={loading}
-              >
+              <button type="submit" style={styles.submitButton} disabled={loading}>
                 {loading ? 'Processing...' : 'Make Payment'}
               </button>
             </form>

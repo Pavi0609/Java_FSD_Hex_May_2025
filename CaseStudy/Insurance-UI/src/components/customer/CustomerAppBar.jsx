@@ -5,39 +5,24 @@ const CustomerAppBar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Add any logout logic here (clearing tokens, etc.)
     navigate('/'); // Redirect to home page
   };
 
   return (
+
     <header style={styles.appBar}>
-      <div style={styles.logo} onClick={() => navigate('/dashboard')}>
-        POLICY INSURANCE COMPANY 
-      </div>
+      <div style={styles.logo}> POLICY INSURANCE COMPANY </div>
       <nav style={styles.nav}>
-        <button 
-          style={styles.navButton}
-          onClick={() => navigate('/customerDashboard')}
-        >
-          Dashboard
-        </button>
-        <button 
-          style={styles.navButton}
-          onClick={() => navigate('/customerProfile')}
-        >
-          Profile
-        </button>
-        <button 
-          style={styles.logoutButton}
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
+        <button style={styles.navButton} onClick={() => navigate('/customerDashboard')}> Dashboard </button>
+        <button style={styles.navButton} onClick={() => navigate('/customerProfile')}> Profile </button>
+        
+        <button style={styles.logoutButton} onClick={handleLogout}> Logout </button>
       </nav>
     </header>
   );
 };
 
+// Style.CSS
 const styles = {
   appBar: {
     backgroundColor: '#2c3e50',
@@ -53,7 +38,7 @@ const styles = {
     fontSize: '20px',
     fontWeight: 'bold',
     cursor: 'pointer',
-    color: 'white', // Keeping your original brand color
+    color: 'white', 
     letterSpacing: '0.5px'
   },
   nav: {

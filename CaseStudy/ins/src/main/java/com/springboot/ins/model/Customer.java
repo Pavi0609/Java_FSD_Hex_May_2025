@@ -1,12 +1,17 @@
 package com.springboot.ins.model;
 
-import java.util.Date; 
+import java.util.Date;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -40,7 +45,12 @@ public class Customer {
     private String customerPanNo;
     
     @OneToOne
+    @JoinColumn(name = "user_id")
     private User user; 
+    
+    @OneToMany(mappedBy = "customer")
+    @JsonIgnoreProperties("customer")  // Prevents infinite recursion
+    private List<Payment> payments;
 
 	// Constructors
     public Customer() {
@@ -122,6 +132,14 @@ public class Customer {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+	
+	public List<Payment> getPayments() {
+		return payments;
+	}
+
+	public void setPayments(List<Payment> payments) {
+		this.payments = payments;
 	}
 	
 }

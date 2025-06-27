@@ -11,32 +11,28 @@ const CustomerViewPayment = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
-  const [showDownload, setShowDownload] = useState(false);
   const navigate = useNavigate();
   const customerId = localStorage.getItem('customerId');
 
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        if (!customerId) {
-          throw new Error('Customer ID not found');
-        }
+        console.log('Customer ID from localStorage:', customerId);
+        // console.log('Token from localStorage:', localStorage.getItem('token'));
 
         const token = localStorage.getItem('token');
-        const response = await axios.get(
-          `http://localhost:8080/api/payments_new/get-one/customer/${customerId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-        
+        const response = await axios.get(`http://localhost:8080/api/payments_new/get-one/customer/${customerId}`, {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        // Log the response to debug
+        console.log('API Response:', response.data);
         setPayments(response.data);
-        // Select the first payment by default (you might want to select the most recent one)
         if (response.data.length > 0) {
           setSelectedPayment(response.data[0]);
         }
         setLoading(false);
       } catch (err) {
+        console.error('Error fetching payments:', err);
         setError(err.response?.data?.message || err.message);
         setLoading(false);
         if (err.response?.status === 401) {
@@ -116,6 +112,7 @@ const CustomerViewPayment = () => {
     doc.save(`payment-receipt-${selectedPayment.paymentId}.pdf`);
   };
 
+  // Corrected styles - removed all pseudo-selectors and fixed property names
   const styles = {
     container: {
       backgroundColor: '#f8f9fa',
@@ -189,11 +186,7 @@ const CustomerViewPayment = () => {
       padding: '8px 16px',
       borderRadius: '4px',
       cursor: 'pointer',
-      fontWeight: '500',
-      ':hover': {
-        backgroundColor: '#ffc107',
-        color: '#222'
-      }
+      fontWeight: '500'
     },
     downloadButton: {
       backgroundColor: '#4CAF50',
@@ -202,10 +195,7 @@ const CustomerViewPayment = () => {
       padding: '8px 16px',
       borderRadius: '4px',
       cursor: 'pointer',
-      fontWeight: '500',
-      ':hover': {
-        backgroundColor: '#45a049'
-      }
+      fontWeight: '500'
     },
     modalOverlay: {
       position: 'fixed',
@@ -238,10 +228,7 @@ const CustomerViewPayment = () => {
       border: 'none',
       fontSize: '20px',
       cursor: 'pointer',
-      color: '#777',
-      ':hover': {
-        color: '#222'
-      }
+      color: '#777'
     },
     modalHeader: {
       color: '#222',
@@ -323,6 +310,7 @@ const CustomerViewPayment = () => {
   return (
     <div>
       <CustomerAppBar />
+
       <div style={styles.container}>
         {/* Payment Selector Dropdown */}
         {payments.length > 1 && (
@@ -334,8 +322,7 @@ const CustomerViewPayment = () => {
                 const paymentId = parseInt(e.target.value);
                 const payment = payments.find(p => p.paymentId === paymentId);
                 setSelectedPayment(payment);
-              }}
-            >
+              }}>
               {payments.map(payment => (
                 <option key={payment.paymentId} value={payment.paymentId}>
                   Payment #{payment.paymentId} - {new Date(payment.paymentDate).toLocaleDateString()} - ₹{payment.amountPaid.toFixed(2)}
@@ -363,6 +350,7 @@ const CustomerViewPayment = () => {
                 <div style={styles.cardLabel}>Payment Method</div>
                 <div style={styles.cardValue}>{selectedPayment.paymentMethod}</div>
               </div>
+
               <div style={styles.cardItem}>
                 <div style={styles.cardLabel}>Status</div>
                 <div style={styles.cardValue}>
@@ -375,10 +363,12 @@ const CustomerViewPayment = () => {
                   </span>
                 </div>
               </div>
+
               <div style={styles.cardItem}>
                 <div style={styles.cardLabel}>Policy</div>
                 <div style={styles.cardValue}>{selectedPayment.proposal.policy.policyName}</div>
               </div>
+
               <div style={styles.cardItem}>
                 <div style={styles.cardLabel}>Vehicle</div>
                 <div style={styles.cardValue}>
@@ -389,11 +379,10 @@ const CustomerViewPayment = () => {
             
             <div style={styles.buttonContainer}>
               <button 
-                style={styles.viewButton}
-                onClick={() => {
-                  setShowDetails(true);
-                  setShowDownload(false);
-                }}
+                style={styles.viewButton} 
+                onClick={() => setShowDetails(true)}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#222'}
               >
                 View Details
               </button>
@@ -405,13 +394,7 @@ const CustomerViewPayment = () => {
         {showDetails && selectedPayment && (
           <div style={styles.modalOverlay}>
             <div style={styles.modalContent}>
-              <button 
-                style={styles.closeButton} 
-                onClick={() => setShowDetails(false)}
-              >
-                ×
-              </button>
-              
+              <button style={styles.closeButton} onClick={() => setShowDetails(false)}> × </button>
               <h1 style={styles.modalHeader}>Payment Details</h1>
               
               <div style={styles.modalSection}>
@@ -420,14 +403,17 @@ const CustomerViewPayment = () => {
                   <div style={styles.infoLabel}>Payment ID:</div>
                   <div style={styles.infoValue}>{selectedPayment.paymentId}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.infoLabel}>Amount Paid:</div>
                   <div style={styles.infoValue}>₹{selectedPayment.amountPaid.toFixed(2)}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.infoLabel}>Payment Method:</div>
                   <div style={styles.infoValue}>{selectedPayment.paymentMethod}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.infoLabel}>Payment Status:</div>
                   <div style={styles.infoValue}>
@@ -436,6 +422,7 @@ const CustomerViewPayment = () => {
                     </span>
                   </div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.infoLabel}>Payment Date:</div>
                   <div style={styles.infoValue}>
@@ -450,10 +437,12 @@ const CustomerViewPayment = () => {
                   <div style={styles.infoLabel}>Policy Name:</div>
                   <div style={styles.infoValue}>{selectedPayment.proposal.policy.policyName}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.infoLabel}>Policy ID:</div>
                   <div style={styles.infoValue}>{selectedPayment.proposal.policy.policyId}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.infoLabel}>Coverage Period:</div>
                   <div style={styles.infoValue}>
@@ -468,14 +457,17 @@ const CustomerViewPayment = () => {
                   <div style={styles.infoLabel}>Vehicle Type:</div>
                   <div style={styles.infoValue}>{selectedPayment.proposal.vehicleType}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.infoLabel}>Vehicle Model:</div>
                   <div style={styles.infoValue}>{selectedPayment.proposal.vehicleModel}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.infoLabel}>Registration Number:</div>
                   <div style={styles.infoValue}>{selectedPayment.proposal.registrationNumber}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.infoLabel}>Manufacture Year:</div>
                   <div style={styles.infoValue}>{selectedPayment.proposal.manufactureYear}</div>
@@ -485,6 +477,8 @@ const CustomerViewPayment = () => {
               <div style={styles.buttonContainer}>
                 <button 
                   style={styles.downloadButton}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#45a049'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#4CAF50'}
                   onClick={handleDownloadReceipt}
                 >
                   Download Receipt
@@ -493,11 +487,10 @@ const CustomerViewPayment = () => {
                   style={{
                     ...styles.viewButton,
                     backgroundColor: '#2196F3',
-                    color: 'white',
-                    ':hover': {
-                      backgroundColor: '#0b7dda'
-                    }
+                    color: 'white'
                   }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0b7dda'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2196F3'}
                   onClick={() => setShowDetails(false)}
                 >
                   Close

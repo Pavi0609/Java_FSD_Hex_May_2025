@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export const SignUp = () => {
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     customerName: '',
@@ -20,6 +21,7 @@ export const SignUp = () => {
 
   // Calculate age when dob changes
   useEffect(() => {
+
     if (formData.customerDob) {
       const dob = new Date(formData.customerDob);
       const today = new Date();
@@ -71,8 +73,8 @@ export const SignUp = () => {
       newErrors.customerAadharNo = 'Valid 12-digit Aadhar number is required';
     }
     
-    if (!formData.customerPanNo || !/^[A-Z]{5}\d{4}[A-Z]{1}$/.test(formData.customerPanNo)) {
-      newErrors.customerPanNo = 'Valid PAN number is required (format: ABCDE1234F)';
+    if (!formData.customerPanNo || !/^[A-Z]{3}\d{7}$/.test(formData.customerPanNo)) {
+      newErrors.customerPanNo = 'Valid PAN number is required (format: PAN1234567)';
     }
     
     if (!formData.username || !/^\S+@\S+\.\S+$/.test(formData.username)) {
@@ -140,8 +142,7 @@ export const SignUp = () => {
             name="customerName"
             value={formData.customerName}
             onChange={handleChange}
-            placeholder="Enter your full name"
-          />
+            placeholder="Enter your full name"/>
           {errors.customerName && <span className="error">{errors.customerName}</span>}
         </div>
 
@@ -152,8 +153,7 @@ export const SignUp = () => {
             name="customerAddress"
             value={formData.customerAddress}
             onChange={handleChange}
-            placeholder="Enter your address"
-          />
+            placeholder="Enter your address"/>
           {errors.customerAddress && <span className="error">{errors.customerAddress}</span>}
         </div>
 
@@ -164,8 +164,7 @@ export const SignUp = () => {
             name="customerDob"
             value={formData.customerDob}
             onChange={handleChange}
-            max={new Date().toISOString().split('T')[0]} // Prevent future dates
-          />
+            max={new Date().toISOString().split('T')[0]}/> 
           {errors.customerDob && <span className="error">{errors.customerDob}</span>}
         </div>
 
@@ -177,8 +176,7 @@ export const SignUp = () => {
             value={formData.customerAge}
             onChange={handleChange}
             placeholder="Auto-calculated from DOB"
-            readOnly
-          />
+            readOnly/>
         </div>
 
         <div className="form-group">
@@ -189,8 +187,7 @@ export const SignUp = () => {
             value={formData.customerAadharNo}
             onChange={handleChange}
             placeholder="Enter 12-digit Aadhar number"
-            maxLength="12"
-          />
+            maxLength="12"/>
           {errors.customerAadharNo && <span className="error">{errors.customerAadharNo}</span>}
         </div>
 
@@ -201,9 +198,8 @@ export const SignUp = () => {
             name="customerPanNo"
             value={formData.customerPanNo}
             onChange={handleChange}
-            placeholder="Enter PAN number (e.g., ABCDE1234F)"
-            maxLength="10"
-          />
+            placeholder="Enter PAN number (e.g., PAN1234567)"
+            maxLength="10"/>
           {errors.customerPanNo && <span className="error">{errors.customerPanNo}</span>}
         </div>
 
@@ -214,8 +210,7 @@ export const SignUp = () => {
             name="username"
             value={formData.username}
             onChange={handleChange}
-            placeholder="Enter your email"
-          />
+            placeholder="Enter your email"/>
           {errors.username && <span className="error">{errors.username}</span>}
         </div>
 
@@ -226,8 +221,7 @@ export const SignUp = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            placeholder="Enter password (min 6 characters)"
-          />
+            placeholder="Enter password (min 6 characters)"/>
           {errors.password && <span className="error">{errors.password}</span>}
         </div>
 
@@ -238,8 +232,7 @@ export const SignUp = () => {
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
-            placeholder="Confirm your password"
-          />
+            placeholder="Confirm your password"/>
           {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
         </div>
 

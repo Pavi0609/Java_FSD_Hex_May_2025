@@ -1,6 +1,6 @@
 package com.springboot.ins.controller;
 
-import com.springboot.ins.model.Payment;  
+import com.springboot.ins.model.Payment;   
 import com.springboot.ins.service.PaymentService;
 
 import org.springframework.beans.factory.annotation.Autowired;

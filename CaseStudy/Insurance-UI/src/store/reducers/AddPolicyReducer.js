@@ -6,6 +6,7 @@ const initialState = {
 };
 
 const addPolicyReducer = (state = initialState, action) => {
+  
   switch (action.type) {
     case 'ADD_POLICY_REQUEST':
       return {

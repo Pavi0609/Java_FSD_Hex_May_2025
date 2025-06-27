@@ -3,6 +3,8 @@ package com.springboot.ins;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
@@ -15,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.springboot.ins.exception.CustomerNotFoundException;
 import com.springboot.ins.model.Customer;
 import com.springboot.ins.model.User;
 import com.springboot.ins.repository.CustomerRepository;
@@ -63,37 +66,51 @@ public class CustomerServiceTest {
 
         Customer saved = customerService.insertCustomer(customer);
 
-       // assertNotNull(saved);
+        // assertNotNull(saved);
         assertEquals("John Doe", saved.getCustomerName());
         assertEquals("CUSTOMER", saved.getUser().getRole());
     }
 
     @Test
-    public void testUpdateCustomerById() {
+    public void testUpdateCustomerByUsername() { 
+    	// Setup test data
+        String username = "jane.doe";
         Customer updateData = new Customer();
         updateData.setCustomerName("Jane Doe");
         updateData.setCustomerAddress("456 Avenue");
 
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
+        // Mock repository responses
+        when(customerRepository.findByUsername(username)) 
+          	.thenReturn(Optional.of(customer));
+            when(customerRepository.save(any(Customer.class)))
+                .thenReturn(customer);
 
-        Customer updated = customerService.updateByCustomerId(1L, updateData);
+        // Execute the test
+        Customer updated = customerService.updateByCustomerId(username, updateData);
 
+        // Verify results
         assertEquals("Jane Doe", updated.getCustomerName());
         assertEquals("456 Avenue", updated.getCustomerAddress());
-    }
+        verify(customerRepository).findByUsername(username);
+        verify(customerRepository).save(customer);
+        }
 
     @Test
-    public void testUpdateCustomerById_NotFound() {
-        when(customerRepository.findById(99L)).thenReturn(Optional.empty());
+    public void testUpdateCustomerByUsername_NotFound() {
+    	String nonExistingUsername = "non.existing";
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-            customerService.updateByCustomerId(99L, customer);
+        when(customerRepository.findByUsername(nonExistingUsername))
+            .thenReturn(Optional.empty());
+
+        CustomerNotFoundException ex = assertThrows(CustomerNotFoundException.class, () -> {
+            customerService.updateByCustomerId(nonExistingUsername, new Customer());
         });
 
-        assertEquals("Customer not found with ID: 99", ex.getMessage());
+        assertEquals("Customer not found with username: " + nonExistingUsername, ex.getMessage());
+        verify(customerRepository).findByUsername(nonExistingUsername);
+        verify(customerRepository, never()).save(any());
     }
-
+       
     @AfterEach
     public void afterEach() {
         customer = null;

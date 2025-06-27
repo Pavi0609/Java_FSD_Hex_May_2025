@@ -5,30 +5,26 @@ const AdminAppBar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Add any logout logic here (clearing tokens, etc.)
     navigate('/'); // Redirect to home page
   };
 
   return (
+
     <header style={styles.appBar}>
       <div style={styles.logo}> POLICY INSURANCE COMPANY </div>
       <nav style={styles.nav}>
-        <a href="/admin" style={styles.navLink}>Dashboard</a>
-        <a href="/addPolicy" style={styles.navLink}>Add Policy</a>
-        <a href="/addPolicyAddOns" style={styles.navLink}>Add PolicyAddOns</a>
-        <a href="/adminProfile" style={styles.navLink}>Profile</a>
-        <button 
-          style={styles.logoutButton}
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
+        <button style={styles.navButton} onClick={() => navigate('/admin')}> Dashboard </button>
+        <button style={styles.navButton} onClick={() => navigate('/addPolicy')}> Add Policy </button>
+        <button style={styles.navButton} onClick={() => navigate('/addPolicyAddOns')}> Add PolicyAddOns </button>
+        <button style={styles.navButton} onClick={() => navigate('/adminProfile')}> Profile </button>
+        
+        <button style={styles.logoutButton} onClick={handleLogout}> Logout </button>
       </nav>
     </header>
   );
 };
 
-// Style.CSS
+// Style.CSS 
 const styles = {
   appBar: {
     backgroundColor: '#2c3e50',
@@ -49,12 +45,14 @@ const styles = {
     gap: '20px',
     alignItems: 'center'
   },
-  navLink: {
+  navButton: {
+    backgroundColor: 'transparent',
     color: 'white',
-    textDecoration: 'none',
-    fontSize: '16px',
-    padding: '5px 10px',
+    border: 'none',
+    padding: '8px 15px',
     borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '16px',
     transition: 'background-color 0.3s',
     ':hover': {
       backgroundColor: '#34495e'

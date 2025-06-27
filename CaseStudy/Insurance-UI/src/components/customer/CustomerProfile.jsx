@@ -4,23 +4,42 @@ import CustomerAppBar from './CustomerAppBar';
 import { useNavigate } from 'react-router-dom';
 
 const CustomerProfile = () => {
+
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    customerName: '',
+    customerAddress: '',
+    customerDob: '',
+    customerAge: '',
+    customerAadharNo: '',
+    customerPanNo: ''
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {
+
     const fetchProfileData = async () => {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get('http://localhost:8080/api/customer/get-one-username', {
-          headers: { "Authorization": `Bearer ${token}` }
+          headers: { "Authorization": "Bearer " + token }
         });
         
-        // Store customer ID in localStorage for use in other components
-        localStorage.setItem('customerId', response.data.id);
-        
+        localStorage.setItem('customerId', response.data.id);    
         setProfileData(response.data);
+        // Initialize edit form data with current profile data
+        setEditFormData({
+          customerName: response.data.customerName,
+          customerAddress: response.data.customerAddress,
+          customerDob: response.data.customerDob.split('T')[0], // Format date for input
+          customerAge: response.data.customerAge,
+          customerAadharNo: response.data.customerAadharNo,
+          customerPanNo: response.data.customerPanNo
+        });
         setLoading(false);
       } catch (err) {
         setError(err.response?.data?.message || err.message);
@@ -36,7 +55,58 @@ const CustomerProfile = () => {
     fetchProfileData();
   }, [navigate]);
 
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancelClick = () => {
+    setIsEditing(false);
+    // Reset form data to current profile data
+    if (profileData) {
+      setEditFormData({
+        customerName: profileData.customerName,
+        customerAddress: profileData.customerAddress,
+        customerDob: profileData.customerDob.split('T')[0],
+        customerAge: profileData.customerAge,
+        customerAadharNo: profileData.customerAadharNo,
+        customerPanNo: profileData.customerPanNo
+      });
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData({
+      ...editFormData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put('http://localhost:8080/api/customer/update', editFormData, {
+        headers: { "Authorization": "Bearer " + token }
+      });
+      setProfileData(response.data);
+      setIsEditing(false);
+      // Update the form data with the new values
+      setEditFormData({
+        customerName: response.data.customerName,
+        customerAddress: response.data.customerAddress,
+        customerDob: response.data.customerDob.split('T')[0],
+        customerAge: response.data.customerAge,
+        customerAadharNo: response.data.customerAadharNo,
+        customerPanNo: response.data.customerPanNo
+      });
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+    }
+  };
+
   const styles = {
+
     profileContainer: {
       maxWidth: '800px',
       margin: '0 auto',
@@ -88,7 +158,7 @@ const CustomerProfile = () => {
       padding: '40px',
       color: '#e74c3c'
     },
-    editButton: {
+    button: {
       backgroundColor: '#3498db',
       color: 'white',
       border: 'none',
@@ -96,9 +166,34 @@ const CustomerProfile = () => {
       borderRadius: '4px',
       cursor: 'pointer',
       marginTop: '20px',
-      ':hover': {
+      marginRight: '10px',
+      '&:hover': {
         backgroundColor: '#2980b9'
       }
+    },
+    cancelButton: {
+      backgroundColor: '#e74c3c',
+      '&:hover': {
+        backgroundColor: '#c0392b'
+      }
+    },
+    input: {
+      flex: 1,
+      padding: '8px',
+      borderRadius: '4px',
+      border: '1px solid #ddd',
+      fontSize: '16px'
+    },
+    formRow: {
+      display: 'flex',
+      marginBottom: '15px',
+      alignItems: 'center'
+    },
+    formLabel: {
+      fontWeight: 'bold',
+      width: '200px',
+      color: '#555',
+      marginRight: '15px'
     }
   };
 
@@ -136,61 +231,142 @@ const CustomerProfile = () => {
         <h1 style={styles.header}>Customer Profile</h1>
         
         <div style={styles.profileCard}>
-          <div style={styles.section}>
-            <h2 style={styles.sectionTitle}>Personal Information</h2>
-            
-            <div style={styles.infoRow}>
-              <div style={styles.label}>Customer ID:</div>
-              <div style={styles.value}>{profileData.id}</div>
-            </div>
-            
-            <div style={styles.infoRow}>
-              <div style={styles.label}>Full Name:</div>
-              <div style={styles.value}>{profileData.customerName}</div>
-            </div>
-            
-            <div style={styles.infoRow}>
-              <div style={styles.label}>Date of Birth:</div>
-              <div style={styles.value}>{profileData.customerDob} (Age: {profileData.customerAge})</div>
-            </div>
-            
-            <div style={styles.infoRow}>
-              <div style={styles.label}>Address:</div>
-              <div style={styles.value}>{profileData.customerAddress}</div>
-            </div>
-          </div>
-          
-          <div style={styles.section}>
-            <h2 style={styles.sectionTitle}>Identification Details</h2>
-            
-            <div style={styles.infoRow}>
-              <div style={styles.label}>Aadhar Number:</div>
-              <div style={styles.value}>{profileData.customerAadharNo}</div>
-            </div>
-            
-            <div style={styles.infoRow}>
-              <div style={styles.label}>PAN Number:</div>
-              <div style={styles.value}>{profileData.customerPanNo}</div>
-            </div>
-          </div>
-          
-          <div style={styles.section}>
-            <h2 style={styles.sectionTitle}>Account Information</h2>
-            
-            <div style={styles.infoRow}>
-              <div style={styles.label}>Username/Email:</div>
-              <div style={styles.value}>{profileData.user.username}</div>
-            </div>
-            
-            <div style={styles.infoRow}>
-              <div style={styles.label}>Account Type:</div>
-              <div style={styles.value}>{profileData.user.role}</div>
-            </div>
-          </div>
-          
-          <button style={styles.editButton}>
-            Edit Profile
-          </button>
+          {!isEditing ? (
+            <>
+              <div style={styles.section}>
+                <h2 style={styles.sectionTitle}>Personal Information</h2>
+                
+                <div style={styles.infoRow}>
+                  <div style={styles.label}>Customer ID:</div>
+                  <div style={styles.value}>{profileData.id}</div>
+                </div>
+                
+                <div style={styles.infoRow}>
+                  <div style={styles.label}>Full Name:</div>
+                  <div style={styles.value}>{profileData.customerName}</div>
+                </div>
+                
+                <div style={styles.infoRow}>
+                  <div style={styles.label}>Date of Birth:</div>
+                  <div style={styles.value}>{profileData.customerDob} (Age: {profileData.customerAge})</div>
+                </div>
+                
+                <div style={styles.infoRow}>
+                  <div style={styles.label}>Address:</div>
+                  <div style={styles.value}>{profileData.customerAddress}</div>
+                </div>
+              </div>
+              
+              <div style={styles.section}>
+                <h2 style={styles.sectionTitle}>Identification Details</h2>
+                
+                <div style={styles.infoRow}>
+                  <div style={styles.label}>Aadhar Number:</div>
+                  <div style={styles.value}>{profileData.customerAadharNo}</div>
+                </div>
+                
+                <div style={styles.infoRow}>
+                  <div style={styles.label}>PAN Number:</div>
+                  <div style={styles.value}>{profileData.customerPanNo}</div>
+                </div>
+              </div>
+              
+              <div style={styles.section}>
+                <h2 style={styles.sectionTitle}>Account Information</h2>
+                
+                <div style={styles.infoRow}>
+                  <div style={styles.label}>Username/Email:</div>
+                  <div style={styles.value}>{profileData.user.username}</div>
+                </div>
+                
+                <div style={styles.infoRow}>
+                  <div style={styles.label}>Account Type:</div>
+                  <div style={styles.value}>{profileData.user.role}</div>
+                </div>
+              </div>
+              
+              <button style={styles.button} onClick={handleEditClick}> Edit Profile </button>
+            </>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <div style={styles.section}>
+                <h2 style={styles.sectionTitle}>Edit Personal Information</h2>
+                
+                <div style={styles.formRow}>
+                  <label style={styles.formLabel}>Full Name:</label>
+                  <input
+                    type="text"
+                    name="customerName"
+                    value={editFormData.customerName}
+                    onChange={handleInputChange}
+                    style={styles.input}
+                    required/>
+                </div>
+                
+                <div style={styles.formRow}>
+                  <label style={styles.formLabel}>Date of Birth:</label>
+                  <input
+                    type="date"
+                    name="customerDob"
+                    value={editFormData.customerDob}
+                    onChange={handleInputChange}
+                    style={styles.input}
+                    required/>
+                </div>
+                
+                <div style={styles.formRow}>
+                  <label style={styles.formLabel}>Age:</label>
+                  <input
+                    type="number"
+                    name="customerAge"
+                    value={editFormData.customerAge}
+                    onChange={handleInputChange}
+                    style={styles.input}
+                    required/>
+                </div>
+                
+                <div style={styles.formRow}>
+                  <label style={styles.formLabel}>Address:</label>
+                  <input
+                    type="text"
+                    name="customerAddress"
+                    value={editFormData.customerAddress}
+                    onChange={handleInputChange}
+                    style={styles.input}
+                    required/>
+                </div>
+              </div>
+              
+              <div style={styles.section}>
+                <h2 style={styles.sectionTitle}>Edit Identification Details</h2>
+                
+                <div style={styles.formRow}>
+                  <label style={styles.formLabel}>Aadhar Number:</label>
+                  <input
+                    type="text"
+                    name="customerAadharNo"
+                    value={editFormData.customerAadharNo}
+                    onChange={handleInputChange}
+                    style={styles.input}
+                    required/>
+                </div>
+                
+                <div style={styles.formRow}>
+                  <label style={styles.formLabel}>PAN Number:</label>
+                  <input
+                    type="text"
+                    name="customerPanNo"
+                    value={editFormData.customerPanNo}
+                    onChange={handleInputChange}
+                    style={styles.input}
+                    required/>
+                </div>
+              </div>
+              
+              <button type="submit" style={styles.button}> Save Changes </button>
+              <button type="button" style={{ ...styles.button, ...styles.cancelButton }} onClick={handleCancelClick}> Cancel </button>
+            </form>
+          )}
         </div>
       </div>
     </div>

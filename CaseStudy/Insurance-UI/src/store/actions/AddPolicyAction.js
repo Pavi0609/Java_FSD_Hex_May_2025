@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 export const addPolicy = (policyData, token) => async (dispatch) => {
+
   try {
     dispatch({ type: 'ADD_POLICY_REQUEST' });
     
@@ -11,7 +12,7 @@ export const addPolicy = (policyData, token) => async (dispatch) => {
     
     const response = await axios.post('http://localhost:8080/api/policy/add', payload, {
       headers: { 
-        "Authorization": `Bearer ${token}`,
+        "Authorization": "Bearer " + token,
         "Content-Type": 'application/json'
       }
     });
@@ -30,4 +31,5 @@ export const addPolicy = (policyData, token) => async (dispatch) => {
     });
     throw error;
   }
-};
+  
+}

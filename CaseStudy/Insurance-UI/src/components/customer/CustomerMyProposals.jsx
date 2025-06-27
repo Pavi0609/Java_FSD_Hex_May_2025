@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import CustomerAppBar from './CustomerAppBar';
 
 const CustomerMyProposals = () => {
+
   const [proposals, setProposals] = useState([]); // Changed to array
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,11 +12,12 @@ const CustomerMyProposals = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+
     const fetchProposals = async () => {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get('http://localhost:8080/api/proposal/get-one-cusotmer', {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { "Authorization": "Bearer " + token }
         });
         setProposals(response.data);
         setLoading(false);
@@ -33,6 +35,7 @@ const CustomerMyProposals = () => {
   }, [navigate]);
 
   const styles = {
+
     container: {
       backgroundColor: '#f8f9fa',
       minHeight: '100vh',
@@ -53,7 +56,7 @@ const CustomerMyProposals = () => {
       padding: '20px',
       cursor: 'pointer',
       transition: 'all 0.3s',
-      borderLeft: '4px solid #ffc107',
+      borderLeft: '4px solid #4CAF50',
       ':hover': {
         transform: 'translateY(-3px)',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
@@ -226,27 +229,30 @@ const CustomerMyProposals = () => {
             <div 
               key={proposal.proposalId}
               style={styles.summaryCard} 
-              onClick={() => setSelectedProposal(proposal)}
-            >
+              onClick={() => setSelectedProposal(proposal)}>
               <div style={styles.summaryTitle}>
                 <span>Proposal #{proposal.proposalId}</span>
                 <span style={styles.summaryStatus(proposal.proposalStatus)}>
                   {proposal.proposalStatus ? 'ACTIVE' : 'INACTIVE'}
                 </span>
               </div>
+
               <div style={styles.summaryDetails}>
                 <div style={styles.summaryItem}>
                   <div style={styles.summaryLabel}>Vehicle</div>
                   <div style={styles.summaryValue}>{proposal.vehicleType} - {proposal.vehicleModel}</div>
                 </div>
+
                 <div style={styles.summaryItem}>
                   <div style={styles.summaryLabel}>Policy</div>
                   <div style={styles.summaryValue}>{proposal.policy.policyName}</div>
                 </div>
+
                 <div style={styles.summaryItem}>
                   <div style={styles.summaryLabel}>Premium</div>
                   <div style={styles.summaryValue}>₹{proposal.policy.premiumAmount}</div>
                 </div>
+
                 <div style={styles.summaryItem}>
                   <div style={styles.summaryLabel}>Submitted</div>
                   <div style={styles.summaryValue}>
@@ -261,21 +267,16 @@ const CustomerMyProposals = () => {
         {selectedProposal && (
           <div style={styles.modalOverlay}>
             <div style={styles.modalContent}>
-              <button 
-                style={styles.closeButton} 
-                onClick={() => setSelectedProposal(null)}
-              >
-                ×
-              </button>
-              
+              <button style={styles.closeButton} onClick={() => setSelectedProposal(null)}> × </button> 
               <h1 style={styles.header}>Proposal Details</h1>
-              
+
               <div style={styles.section}>
                 <h2 style={styles.sectionTitle}>Proposal Information</h2>
                 <div style={styles.infoRow}>
                   <div style={styles.label}>Proposal ID:</div>
                   <div style={styles.value}>{selectedProposal.proposalId}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.label}>Status:</div>
                   <div style={styles.value}>
@@ -284,6 +285,7 @@ const CustomerMyProposals = () => {
                     </span>
                   </div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.label}>Submitted Date:</div>
                   <div style={styles.value}>
@@ -298,14 +300,17 @@ const CustomerMyProposals = () => {
                   <div style={styles.label}>Vehicle Type:</div>
                   <div style={styles.value}>{selectedProposal.vehicleType}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.label}>Vehicle Model:</div>
                   <div style={styles.value}>{selectedProposal.vehicleModel}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.label}>Registration Number:</div>
                   <div style={styles.value}>{selectedProposal.registrationNumber}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.label}>Manufacture Year:</div>
                   <div style={styles.value}>{selectedProposal.manufactureYear}</div>
@@ -318,20 +323,24 @@ const CustomerMyProposals = () => {
                   <div style={styles.label}>Policy Name:</div>
                   <div style={styles.value}>{selectedProposal.policy.policyName}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.label}>Policy ID:</div>
                   <div style={styles.value}>{selectedProposal.policy.policyId}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.label}>Premium Amount:</div>
                   <div style={styles.value}>₹{selectedProposal.policy.premiumAmount}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.label}>Coverage Period:</div>
                   <div style={styles.value}>
                     {selectedProposal.policy.startDate} to {selectedProposal.policy.endDate}
                   </div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.label}>Policy Status:</div>
                   <div style={styles.value}>
@@ -348,14 +357,17 @@ const CustomerMyProposals = () => {
                   <div style={styles.label}>Customer Name:</div>
                   <div style={styles.value}>{selectedProposal.customer.customerName}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.label}>Email:</div>
                   <div style={styles.value}>{selectedProposal.customer.user.username}</div>
                 </div>
+
                 <div style={styles.infoRow}>
                   <div style={styles.label}>Address:</div>
                   <div style={styles.value}>{selectedProposal.customer.customerAddress}</div>
                 </div>
+                
                 <div style={styles.infoRow}>
                   <div style={styles.label}>Date of Birth:</div>
                   <div style={styles.value}>

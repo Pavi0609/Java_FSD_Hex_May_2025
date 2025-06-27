@@ -6,6 +6,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 const CustomerMyQuotes = () => {
+
   const [proposals, setProposals] = useState([]);
   const [selectedProposalId, setSelectedProposalId] = useState(null);
   const [quote, setQuote] = useState(null);
@@ -16,14 +17,13 @@ const CustomerMyQuotes = () => {
 
   // Fetch all proposals for the customer
   useEffect(() => {
+
     const fetchProposals = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(
-          'http://localhost:8080/api/proposal/get-one-cusotmer',
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        
+        const response = await axios.get('http://localhost:8080/api/proposal/get-one-cusotmer',{ 
+          headers: { "Authorization": "Bearer " + token }
+        });
         setProposals(response.data);
         
         // Select the first proposal by default if available
@@ -54,10 +54,9 @@ const CustomerMyQuotes = () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('token');
-        const response = await axios.get(
-          `http://localhost:8080/api/quote/get-one/proposal/${selectedProposalId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const response = await axios.get(`http://localhost:8080/api/quote/get-one/proposal/${selectedProposalId}`, { 
+          headers: { "Authorization": "Bearer " + token }
+        });
         setQuote(response.data);
         setError(null);
         setLoading(false);
@@ -126,7 +125,6 @@ const CustomerMyQuotes = () => {
     
     // Validity
     doc.text(`Validity Period: ${quote.validityPeriod} days`, 14, doc.lastAutoTable.finalY + 15);
-    
     doc.save(`insurance-quote-${quote.quoteId}.pdf`);
   };
 
@@ -141,6 +139,7 @@ const CustomerMyQuotes = () => {
   };
 
   const styles = {
+
     container: {
       backgroundColor: '#f8f9fa',
       minHeight: '100vh',
@@ -400,16 +399,13 @@ const CustomerMyQuotes = () => {
         {/* Proposal selection dropdown */}
         {proposals.length > 1 && (
           <div style={styles.dropdownContainer}>
-            <label htmlFor="proposal-select" style={styles.dropdownLabel}>
-              Select Proposal:
-            </label>
+            <label htmlFor="proposal-select" style={styles.dropdownLabel}> Select Proposal: </label>
             <select
               id="proposal-select"
               value={selectedProposalId || ''}
               onChange={handleProposalChange}
               style={styles.dropdown}
-              disabled={loading}
-            >
+              disabled={loading}>
               {proposals.map((proposal) => (
                 <option key={proposal.proposalId} value={proposal.proposalId}>
                   Proposal #{proposal.proposalId} - {proposal.vehicleType} ({proposal.vehicleModel})
@@ -439,16 +435,19 @@ const CustomerMyQuotes = () => {
                     {quote.proposal.vehicleType} - {quote.proposal.vehicleModel}
                   </div>
                 </div>
+                
                 <div style={styles.quoteItem}>
                   <div style={styles.quoteLabel}>Policy</div>
                   <div style={styles.quoteValue}>{quote.proposal.policy.policyName}</div>
                 </div>
+
                 <div style={styles.quoteItem}>
                   <div style={styles.quoteLabel}>Generated Date</div>
                   <div style={styles.quoteValue}>
                     {new Date(quote.generatedDate).toLocaleDateString()}
                   </div>
                 </div>
+
                 <div style={styles.quoteItem}>
                   <div style={styles.quoteLabel}>Validity</div>
                   <div style={styles.quoteValue}>{quote.validityPeriod} days</div>
@@ -456,32 +455,12 @@ const CustomerMyQuotes = () => {
               </div>
               
               <div style={styles.buttonContainer}>
-                <button 
-                  style={styles.viewButton}
-                  onClick={() => setShowDetails(true)}
-                >
-                  View Details
-                </button>
-                <button 
-                  style={styles.downloadButton}
-                  onClick={handleDownloadPDF}
-                >
-                  Download PDF
-                </button>
+                <button style={styles.viewButton} onClick={() => setShowDetails(true)}> View Details </button>
+                <button style={styles.downloadButton} onClick={handleDownloadPDF}> Download PDF </button>
                 {quote?.proposal?.proposalStatus ? (
-                  <button 
-                    style={styles.paymentButton}
-                    onClick={handlePayment}
-                  >
-                    Make Payment
-                  </button>
+                  <button style={styles.paymentButton} onClick={handlePayment}> Make Payment </button>
                 ) : (
-                  <button 
-                    style={styles.disabledButton}
-                    disabled
-                  >
-                    Payment Unavailable
-                  </button>
+                  <button style={styles.disabledButton} disabled> Payment Unavailable </button>
                 )}
               </div>
             </div>
@@ -489,13 +468,8 @@ const CustomerMyQuotes = () => {
             {showDetails && (
               <div style={styles.modalOverlay}>
                 <div style={styles.modalContent}>
-                  <button 
-                    style={styles.closeButton} 
-                    onClick={() => setShowDetails(false)}
-                  >
-                    ×
-                  </button>
-                  
+                  <button style={styles.closeButton} onClick={() => setShowDetails(false)}> × </button>
+          
                   <h1 style={styles.modalHeader}>Quote Details</h1>
                   
                   <div style={styles.modalSection}>
@@ -504,16 +478,19 @@ const CustomerMyQuotes = () => {
                       <div style={styles.infoLabel}>Quote ID:</div>
                       <div style={styles.infoValue}>{quote.quoteId}</div>
                     </div>
+
                     <div style={styles.infoRow}>
                       <div style={styles.infoLabel}>Premium Amount:</div>
                       <div style={styles.infoValue}>₹{quote.premiumAmount}</div>
                     </div>
+
                     <div style={styles.infoRow}>
                       <div style={styles.infoLabel}>Generated Date:</div>
                       <div style={styles.infoValue}>
                         {new Date(quote.generatedDate).toLocaleDateString()}
                       </div>
                     </div>
+
                     <div style={styles.infoRow}>
                       <div style={styles.infoLabel}>Validity Period:</div>
                       <div style={styles.infoValue}>{quote.validityPeriod} days</div>
@@ -526,14 +503,17 @@ const CustomerMyQuotes = () => {
                       <div style={styles.infoLabel}>Vehicle Type:</div>
                       <div style={styles.infoValue}>{quote.proposal.vehicleType}</div>
                     </div>
+
                     <div style={styles.infoRow}>
                       <div style={styles.infoLabel}>Vehicle Model:</div>
                       <div style={styles.infoValue}>{quote.proposal.vehicleModel}</div>
                     </div>
+
                     <div style={styles.infoRow}>
                       <div style={styles.infoLabel}>Registration Number:</div>
                       <div style={styles.infoValue}>{quote.proposal.registrationNumber}</div>
                     </div>
+
                     <div style={styles.infoRow}>
                       <div style={styles.infoLabel}>Manufacture Year:</div>
                       <div style={styles.infoValue}>{quote.proposal.manufactureYear}</div>
@@ -546,20 +526,24 @@ const CustomerMyQuotes = () => {
                       <div style={styles.infoLabel}>Policy Name:</div>
                       <div style={styles.infoValue}>{quote.proposal.policy.policyName}</div>
                     </div>
+
                     <div style={styles.infoRow}>
                       <div style={styles.infoLabel}>Policy ID:</div>
                       <div style={styles.infoValue}>{quote.proposal.policy.policyId}</div>
                     </div>
+
                     <div style={styles.infoRow}>
                       <div style={styles.infoLabel}>Original Premium:</div>
                       <div style={styles.infoValue}>₹{quote.proposal.policy.premiumAmount}</div>
                     </div>
+
                     <div style={styles.infoRow}>
                       <div style={styles.infoLabel}>Coverage Period:</div>
                       <div style={styles.infoValue}>
                         {quote.proposal.policy.startDate} to {quote.proposal.policy.endDate}
                       </div>
                     </div>
+                    
                     <div style={styles.infoRow}>
                       <div style={styles.infoLabel}>Policy Status:</div>
                       <div style={styles.infoValue}>

@@ -11,15 +11,16 @@ import java.util.List;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     
-    // Get all payments
-    // (Default JpaRepository methods already provide findAll())
-    
-    // Get payment by id
-    // (Default JpaRepository methods already provide findById())
-    
     // Get payment by Customer id
-    @Query("SELECT p FROM Payment p WHERE p.customer.id = ?1")
-    List<Payment> findByCustomerId(@Param("customerId") Long id);
+    @Query("SELECT DISTINCT p FROM Payment p " +
+            "JOIN FETCH p.customer c " +
+            "JOIN FETCH p.proposal pr " +
+            "JOIN FETCH pr.policy " +
+            "WHERE c.id = :customerId")
+     List<Payment> findByCustomerId(@Param("customerId") Long customerId);
+    
+    // @Query("SELECT DISTINCT p FROM Payment p WHERE p.customer.id = ?1")
+    // List<Payment> findByCustomerId(@Param("customerId") Long id);
     
     // Get payment by Quote id
     @Query("SELECT p FROM Payment p WHERE p.quote.quoteId = ?1")
@@ -28,27 +29,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     // Get payment by Proposal id
     @Query("SELECT p FROM Payment p WHERE p.proposal.proposalId = ?1")
     List<Payment> findByProposalId(@Param("proposalId") Long proposalId);
-    
-    // Delete payment by id
-    // (Default JpaRepository methods already provide deleteById())
+
 }
-
-
-/*
-public interface PaymentRepository extends JpaRepository<Payment, Integer> {
-
-    @Query("SELECT p FROM Payment p WHERE p.quote.quoteId = ?1")
-    Optional<Payment> findByQuoteQuoteId(Long quoteId);
-
-    @Query("SELECT p FROM Payment p WHERE p.customer.id = ?1")
-    Optional<Payment> findByCustomerId(Long id);
-    
-    @Query("SELECT COUNT(p) > 0 FROM Payment p WHERE p.quote.quoteId = ?1")
-    boolean existsByQuoteId(Long quoteId);
-
-    @Query("SELECT COUNT(p) > 0 FROM Payment p WHERE p.proposal.proposalId = ?1")
-    boolean existsByProposalId(Long proposalId);
-
-    
-}
-*/

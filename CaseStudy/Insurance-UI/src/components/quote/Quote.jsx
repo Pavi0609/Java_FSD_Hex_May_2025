@@ -20,7 +20,7 @@ function Quote() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('http://localhost:8080/api/quote/get-all', {
-        headers: { "Authorization": `Bearer ${token}` }
+        headers: { "Authorization": "Bearer " + token }
       });
       setQuotes(response.data);
     } catch (err) {
@@ -117,13 +117,14 @@ function Quote() {
             <div key={quote.quoteId} className="col-md-12 mb-4">
               <div className="card shadow-sm">
                 <div className="card-header bg-light d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0">Quote #{quote.quoteId}</h5>
+                  <h5 className="mb-0">Quote {quote.quoteId}</h5>
                   <span className={`badge ${quote.proposal.proposalStatus ? 'bg-success' : 'bg-warning'}`}>
                     {quote.proposal.proposalStatus ? 'Accepted' : 'Pending'}
                   </span>
                 </div>
                 
                 <div className="card-body">
+
                   {/* Quote Details */}
                   <div className="mb-4 p-3 border rounded">
                     <h6 className="text-primary">Quote Summary</h6>
@@ -154,11 +155,7 @@ function Quote() {
                         </div>
                       )}
                     </div>
-                    <button 
-                      className="btn btn-primary"
-                      onClick={() => sendQuoteEmail(quote)}
-                      disabled={sending[quote.quoteId]}
-                    >
+                    <button className="btn btn-primary" onClick={() => sendQuoteEmail(quote)} disabled={sending[quote.quoteId]}>
                       {sending[quote.quoteId] ? (
                         <>
                           <span className="spinner-border spinner-border-sm me-2"></span>

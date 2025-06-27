@@ -7,6 +7,8 @@ import com.springboot.ins.model.PolicyAddOns;
 import com.springboot.ins.repository.PolicyAddOnsRepository;
 import com.springboot.ins.repository.PolicyRepository;
 
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -64,8 +66,14 @@ public class PolicyAddOnsService {
     }
     
 	// delete policyAddOns by id
-	public void deleteByAddonId(int addonId) {
-		policyAddOnsRepository.deleteByAddonId(addonId);
-	}
+    @Transactional
+    public void deleteByAddonId(Integer addonId) {
+        // First check if the addon exists
+        if (!policyAddOnsRepository.existsById(addonId)) {
+            throw new PolicyAddOnsNotFoundException("Policy addon not found with id: " + addonId);
+        }
+        // Use the correct delete method
+        policyAddOnsRepository.deleteById(addonId);
+    }
 
 }

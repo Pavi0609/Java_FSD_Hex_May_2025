@@ -1,5 +1,3 @@
-//src/store/reducers/UserReducer
-
 const initialState = {
     username: "",
     role: ""

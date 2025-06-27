@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
-import com.springboot.ins.model.Claim;  
+import com.springboot.ins.model.Claim;
 import com.springboot.ins.service.ClaimService;
 
 @RestController
@@ -45,10 +46,11 @@ public class ClaimController {
         return ResponseEntity.ok(claim);
     }
 
-    // Get claims by customer ID
-    @GetMapping("/get-all/customer/{customerId}")
-    public ResponseEntity<List<Claim>> getClaimsByCustomer(@PathVariable Long customerId) {
-        return ResponseEntity.ok(claimService.getClaimsByCustomerId(customerId));
+    // Get claims by id (using token)
+    @GetMapping("/get-one-cusotmer")
+    public List<Claim> getClaimsByUsername(Principal principal) {
+        String username = principal.getName(); 
+        return claimService.getClaimsByUsername(username);
     }
 
     // Get claims by proposal ID

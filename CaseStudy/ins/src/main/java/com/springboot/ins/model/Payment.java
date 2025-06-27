@@ -32,8 +32,13 @@ public class Payment {
     private String paymentStatus;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customer_id")
+    // @JsonIgnoreProperties("payments")  // Prevents back-reference
     private Customer customer;
+    
+    // @ManyToOne
+    // @JoinColumn(name = "customer_id", nullable = false)
+    // private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "proposal_id")

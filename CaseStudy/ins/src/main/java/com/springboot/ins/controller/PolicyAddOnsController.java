@@ -1,7 +1,7 @@
 package com.springboot.ins.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -59,8 +59,9 @@ public class PolicyAddOnsController {
 
 	// delete policyAddOns by id
     @DeleteMapping("/delete/{addonId}")
-    public ResponseEntity<Void> deleteAddonById(@PathVariable int addonId) {
+    public ResponseEntity<String> deleteAddonById(@PathVariable Integer addonId) {
         policyAddOnsService.deleteByAddonId(addonId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.OK).body("Policy addon deleted");
     }
+
 }

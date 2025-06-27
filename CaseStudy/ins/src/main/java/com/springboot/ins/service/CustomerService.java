@@ -66,11 +66,11 @@ public class CustomerService {
 	}
 	
 	// update customer by id
-	public Customer updateByCustomerId(Long id, Customer updateCustomer) {
+	public Customer updateByCustomerId(String username, Customer updateCustomer) {
 		
 		// Fetch Customer by CustomerId
-	    Customer customer = customerRepository.findById(id)
-	        .orElseThrow(() -> new CustomerNotFoundException("Customer not found with ID: " + id));
+	    Customer customer = customerRepository.findByUsername(username)
+	        .orElseThrow(() -> new CustomerNotFoundException("Customer not found with ID: " + username));
 
 	    if (updateCustomer.getCustomerName() != null) {
 	        customer.setCustomerName(updateCustomer.getCustomerName());

@@ -3,17 +3,19 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function Proposal() {
+
   const [proposals, setProposals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+
     const fetchProposals = async () => {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get('http://localhost:8080/api/proposal/get-all', {
-          headers: { "Authorization": `Bearer ${token}` }
+          headers: { "Authorization": "Bearer " + token }
         });
         setProposals(response.data);
       } catch (err) {
@@ -31,14 +33,11 @@ function Proposal() {
     setProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.put(
-        `http://localhost:8080/api/proposal/update-status/${proposalId}`,
-        null, // No request body needed since we're using query params
+      await axios.put(`http://localhost:8080/api/proposal/update-status/${proposalId}`, null, 
         {
           params: { newStatus },
-          headers: { "Authorization": `Bearer ${token}` }
-        }
-      );
+          headers: { "Authorization": "Bearer " + token }
+        });
       return true;
     } catch (err) {
       console.error(`Error updating proposal status:`, err);
@@ -50,8 +49,10 @@ function Proposal() {
   };
 
 const handleAccept = async (proposalId) => {
+
   if (window.confirm(`Are you sure you want to accept Proposal ${proposalId}?`)) {
     const success = await updateProposalStatus(proposalId, true);
+
     if (success) {
       const proposal = proposals.find(p => p.proposalId === proposalId);
       navigate('/addQuotes', { 
@@ -66,8 +67,10 @@ const handleAccept = async (proposalId) => {
 };
 
   const handleReject = async (proposalId, customerEmail) => {
+
     if (window.confirm(`Are you sure you want to reject Proposal ${proposalId}?`)) {
       const success = await updateProposalStatus(proposalId, false);
+
       if (success) {
         alert(`Proposal #${proposalId} rejected successfully. Notification will be sent to customer.`);
         console.log(`Notification sent to ${customerEmail}: Your proposal has been rejected`);
@@ -129,7 +132,7 @@ const handleAccept = async (proposalId) => {
                     </div>
                   </div>
 
-                  {/* Vehicle/Proposal Details Section */}
+                  {/* Vehicle Details Section */}
                   <div className="mb-4 p-3 border rounded">
                     <h6 className="text-primary">Vehicle Details</h6>
                     <div className="row">
@@ -165,15 +168,13 @@ const handleAccept = async (proposalId) => {
                     <button 
                       className="btn btn-success me-2"
                       onClick={() => handleAccept(proposal.proposalId)}
-                      disabled={processing || proposal.proposalStatus}
-                    >
+                      disabled={processing || proposal.proposalStatus}>
                       {processing ? 'Processing...' : 'Accept'}
                     </button>
                     <button 
                       className="btn btn-danger"
                       onClick={() => handleReject(proposal.proposalId, proposal.customer.user.username)}
-                      disabled={processing || proposal.proposalStatus === false}
-                    >
+                      disabled={processing || proposal.proposalStatus === false}>
                       {processing ? 'Processing...' : 'Reject'}
                     </button>
                   </div>

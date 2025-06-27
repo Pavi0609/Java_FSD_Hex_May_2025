@@ -3,11 +3,13 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 export const CustomerAddClaim = () => {
+
   const [formData, setFormData] = useState({
     incidentDescription: '',
     settlementAmount: '',
     proposalId: ''
   });
+
   const [customer, setCustomer] = useState(null);
   const [proposals, setProposals] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,26 +19,20 @@ export const CustomerAddClaim = () => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
+
     const fetchData = async () => {
       try {
         // Fetch customer data
-        const customerResponse = await axios.get(
-          'http://localhost:8080/api/customer/get-one-username',
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
+        const customerResponse = await axios.get('http://localhost:8080/api/customer/get-one-username', {
+          headers: { "Authorization": "Bearer " + token }
+        });
         setCustomer(customerResponse.data);
 
         // Fetch proposals for the customer
-        const proposalsResponse = await axios.get(
-          'http://localhost:8080/api/proposal/get-one-cusotmer',
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
+        const proposalsResponse = await axios.get('http://localhost:8080/api/proposal/get-one-cusotmer',{
+          headers: { "Authorization": "Bearer " + token }
+        });
         setProposals(proposalsResponse.data);
-        
         setLoading(false);
       } catch (err) {
         setError(err.response?.data?.message || err.message);
@@ -68,14 +64,13 @@ export const CustomerAddClaim = () => {
     }
 
     try {
-      const response = await axios.post(
-        `http://localhost:8080/api/claims/add/customer/${customer.id}/proposal/${formData.proposalId}`,
+      const response = await axios.post(`http://localhost:8080/api/claims/add/customer/${customer.id}/proposal/${formData.proposalId}`,
         {
           incidentDescription: formData.incidentDescription,
           settlementAmount: parseFloat(formData.settlementAmount)
         },
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { "Authorization": "Bearer " + token }
         }
       );
 
@@ -115,9 +110,7 @@ export const CustomerAddClaim = () => {
       <h2>Submit New Claim</h2>
       
       {success && (
-        <div className="success-message">
-          Claim submitted successfully! Redirecting...
-        </div>
+        <div className="success-message"> Claim submitted successfully! Redirecting... </div>
       )}
 
       <form onSubmit={handleSubmit} className="claim-form">
@@ -128,8 +121,7 @@ export const CustomerAddClaim = () => {
             name="proposalId"
             value={formData.proposalId}
             onChange={handleChange}
-            required
-          >
+            required>
             <option value="">-- Select a Proposal --</option>
             {proposals.map(proposal => (
               <option key={proposal.proposalId} value={proposal.proposalId}>
@@ -148,8 +140,7 @@ export const CustomerAddClaim = () => {
             onChange={handleChange}
             required
             rows="5"
-            placeholder="Describe the incident in detail..."
-          />
+            placeholder="Describe the incident in detail..."/>
         </div>
 
         <div className="form-group">
@@ -163,15 +154,11 @@ export const CustomerAddClaim = () => {
             required
             min="0"
             step="0.01"
-            placeholder="Enter amount"
-          />
+            placeholder="Enter amount"/>
         </div>
 
         {error && <div className="error-message">{error}</div>}
-
-        <button type="submit" className="submit-btn">
-          Submit Claim
-        </button>
+        <button type="submit" className="submit-btn"> Submit Claim </button>
       </form>
 
       <style jsx>{`

@@ -4,22 +4,22 @@ import { useNavigate } from 'react-router-dom';
 import AdminAppBar from './AdminAppbar';
 
 const AdminProfile = () => {
+
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+
     const fetchProfileData = async () => {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get('http://localhost:8080/api/admin/get-one-username', {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        
+          headers: { "Authorization": "Bearer " + token }
+        }); 
         // Store admin ID in localStorage for use in other components
         localStorage.setItem('adminId', response.data.adminId);
-        
         setProfileData(response.data);
         setLoading(false);
       } catch (err) {
@@ -36,6 +36,7 @@ const AdminProfile = () => {
     fetchProfileData();
   }, [navigate]);
 
+  // Style CSS
   const styles = {
     profileContainer: {
       maxWidth: '800px',
@@ -168,10 +169,7 @@ const AdminProfile = () => {
               <div style={styles.value}>{profileData.user.id}</div>
             </div>
           </div>
-          
-          <button style={styles.editButton}>
-            Edit Profile
-          </button>
+                    
         </div>
       </div>
     </div>

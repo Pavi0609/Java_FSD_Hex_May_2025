@@ -4,23 +4,23 @@ import { useNavigate } from 'react-router-dom';
 import AdminAppBar from './AdminAppbar';
 
 const AdminDashboard = () => {
+
   const [adminData, setAdminData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+
     const fetchAdminData = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
           throw new Error('No authentication token found');
         }
-
         const response = await axios.get('http://localhost:8080/api/admin/get-one-username', {
           headers: { "Authorization": "Bearer " + token }
-        });
-        
+        });        
         setAdminData(response.data);
         setLoading(false);
       } catch (err) {
@@ -29,19 +29,21 @@ const AdminDashboard = () => {
         setLoading(false);
       }
     };
-
     fetchAdminData();
   }, []);
 
   const handleCardClick = (cardName) => {
+
     const routeMap = {
+      'View Customers': 'customers',
       'View Proposals': 'proposals',
       'View Quotes': 'quotes',
       'View Claims': 'claims',
       'View Payments': 'payments',
       'View Reviews': 'reviews',
       'View Policies': 'policies',
-      'View Policy Add-Ons': 'policy-addons'
+      'View Policy Add-Ons': 'policy-addons',
+      'Make Payments': 'makePayments',
     };
     
     const path = routeMap[cardName] || 'dashboard';
@@ -74,8 +76,10 @@ const AdminDashboard = () => {
   }
 
   return (
+    
     <div>         
       <AdminAppBar />
+
       <div className="dashboard-container">
         <main className="main-content">
           <div className="welcome-section">
@@ -85,22 +89,23 @@ const AdminDashboard = () => {
             <p className="welcome-subtitle">What would you like to manage today?</p>
           </div>
           
-          <div className="cards-container">
+          <div className="cards-container"> 
             {[
+              { name: 'View Customers', icon: '👥', color: '#00b894' },
               { name: 'View Proposals', icon: '📋', color: '#4e73df' },
               { name: 'View Quotes', icon: '💲', color: '#1cc88a' },
               { name: 'View Claims', icon: '⚠️', color: '#e74a3b' },
               { name: 'View Payments', icon: '💰', color: '#f6c23e' },
               { name: 'View Reviews', icon: '⭐', color: '#36b9cc' },
               { name: 'View Policies', icon: '🛡️', color: '#9b59b6' },
-              { name: 'View Policy Add-Ons', icon: '➕', color: '#9b59b6' }
+              { name: 'View Policy Add-Ons', icon: '➕', color: '#f6c23e' },
+              { name: 'Make Payments', icon: '💸', color: '#1cc88a' }
             ].map((card) => (
               <div 
                 key={card.name}
                 className="dashboard-card" 
                 onClick={() => handleCardClick(card.name)}
-                style={{ '--card-color': card.color }}
-              >
+                style={{ '--card-color': card.color }}>
                 <div className="card-icon">{card.icon}</div>
                 <h3 className="card-title">{card.name}</h3>
                 <p className="card-text">Manage {card.name.replace('View ', '')}</p>

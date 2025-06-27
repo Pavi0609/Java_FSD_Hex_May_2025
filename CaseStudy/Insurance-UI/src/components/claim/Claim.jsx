@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const Claim = () => {
+
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,12 +13,12 @@ export const Claim = () => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
+
     const fetchClaims = async () => {
       try {
-        const response = await axios.get(
-          'http://localhost:8080/api/claims/get-all',
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const response = await axios.get('http://localhost:8080/api/claims/get-all', { 
+          headers: { "Authorization": "Bearer " + token }
+       });
         setClaims(response.data);
         setLoading(false);
       } catch (err) {
@@ -31,17 +32,14 @@ export const Claim = () => {
 
   const handleStatusUpdate = async (claimId, newStatus) => {
     try {
-      await axios.put(
-        `http://localhost:8080/api/claims/update-status/${claimId}?newStatus=${newStatus}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.put(`http://localhost:8080/api/claims/update-status/${claimId}?newStatus=${newStatus}`, {}, {
+        headers: { "Authorization": "Bearer " + token }
+      });
       
       // Refresh the claims list after update
-      const response = await axios.get(
-        'http://localhost:8080/api/claims/get-all',
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await axios.get('http://localhost:8080/api/claims/get-all',{ 
+        headers: { "Authorization": "Bearer " + token }
+      });
       setClaims(response.data);
     } catch (err) {
       setError(err.response?.data?.message || err.message);
@@ -61,12 +59,7 @@ export const Claim = () => {
       <div className="error-container">
         <p className="error-title">Error</p>
         <p>{error}</p>
-        <button 
-          onClick={() => window.location.reload()}
-          className="retry-button"
-        >
-          Retry
-        </button>
+        <button onClick={() => window.location.reload()} className="retry-button"> Retry </button>
       </div>
     );
   }
@@ -286,18 +279,8 @@ export const Claim = () => {
                   <div className="action-buttons">
                     {!claim.claimStatus && (
                       <>
-                        <button
-                          onClick={() => handleStatusUpdate(claim.claimId, true)}
-                          className="accept-button"
-                        >
-                          Accept
-                        </button>
-                        <button
-                          onClick={() => handleStatusUpdate(claim.claimId, false)}
-                          className="reject-button"
-                        >
-                          Reject
-                        </button>
+                        <button className="accept-button" onClick={() => handleStatusUpdate(claim.claimId, true)}> Accept </button>
+                        <button className="reject-button" onClick={() => handleStatusUpdate(claim.claimId, false)}> Reject </button>
                       </>
                     )}
                     {claim.claimStatus && (

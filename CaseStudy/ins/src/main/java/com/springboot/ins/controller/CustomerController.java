@@ -57,14 +57,17 @@ public class CustomerController {
     	return customerService.getCustomerByUsername(username) ;
     } 
     
-	// update customer by id 
-	@PutMapping("/update/{id}")
-	public ResponseEntity<Customer> updateByCustomerId(@PathVariable Long id,
-			                                           @RequestBody Customer updateCustomer) {
-		return ResponseEntity
-				.status(HttpStatus.CREATED)
-				.body(customerService.updateByCustomerId(id, updateCustomer));
-	}
+    @PutMapping("/update")
+    public ResponseEntity<Customer> updateCustomer(Principal principal,
+            @RequestBody Customer updateCustomer) {
+        try {
+            String username = principal.getName();
+            Customer updatedCustomer = customerService.updateByCustomerId(username, updateCustomer);
+            return ResponseEntity.ok(updatedCustomer);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
     
     // delete customer by id
     @DeleteMapping("/delete/{id}")

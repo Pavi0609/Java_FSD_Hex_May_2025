@@ -25,7 +25,7 @@ public class SecurityConfig {
 			.csrf((csrf) -> csrf.disable()) 
 			.authorizeHttpRequests(authorize -> authorize
 					
-					.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+					.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // pre-flight
 					
 					// USER
 					.requestMatchers("/api/user/signup").permitAll()      
@@ -43,7 +43,7 @@ public class SecurityConfig {
 					.requestMatchers("/api/customer/get-all").hasAnyAuthority("ADMIN") 
 					.requestMatchers("/api/customer/get-all-dto").permitAll()    
 					.requestMatchers("/api/customer/get-one-username").hasAnyAuthority("CUSTOMER","ADMIN")	
-                    .requestMatchers("/api/customer/update/{id}").permitAll()  
+                    .requestMatchers("/api/customer/update").hasAuthority("CUSTOMER") 
 					.requestMatchers("/api/customer/delete/{id}").hasAnyAuthority("CUSTOMER","ADMIN")
 					
 					// POLICY
@@ -52,7 +52,7 @@ public class SecurityConfig {
 					.requestMatchers("/api/policy/get-all").permitAll()                                    
 					.requestMatchers("/api/policy/get-all-dto").permitAll()
 					.requestMatchers("/api/policy/get-one/{policyId}").permitAll()
-					.requestMatchers("/api/policy/delete/{id}").hasAuthority("ADMIN")			
+					.requestMatchers("/api/policy/delete/{policyId}").hasAuthority("ADMIN")			
 
 					// PROPOSAL
 					.requestMatchers("/api/proposal/add/{customerId}/{policyId}").hasAuthority("CUSTOMER")     
@@ -88,8 +88,8 @@ public class SecurityConfig {
 					//CLAIM
 					.requestMatchers("/api/claims/add/customer/{customerId}/proposal/{proposalId}").hasAuthority("CUSTOMER")   
 					.requestMatchers("/api/claims/get-all").hasAuthority("ADMIN")                                        
-					.requestMatchers("/api/claims/get-all/customer/{customerId}").hasAuthority("ADMIN") 
-					.requestMatchers("/api/claims/get-all/proposal/{proposalId}").hasAuthority("ADMIN")
+					.requestMatchers("/api/claims/get-one-cusotmer").hasAuthority("CUSTOMER") 
+					.requestMatchers("/api/claims/get-all/proposal/{proposalId}").hasAnyAuthority("CUSTOMER","ADMIN") //.hasAuthority("ADMIN")
 					.requestMatchers("/api/claims/get-one/{claimId}").hasAnyAuthority("CUSTOMER","ADMIN")
 					.requestMatchers("/api/claims/delete/{claimId}").hasAnyAuthority("CUSTOMER","ADMIN") 
 					.requestMatchers("/api/claims/update-status/{claimId}").hasAuthority("ADMIN") 

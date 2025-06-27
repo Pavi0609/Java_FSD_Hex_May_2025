@@ -2,6 +2,7 @@ import React from 'react';
 import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
+
   page: { padding: 30, fontFamily: 'Helvetica' },
   header: { 
     fontSize: 20, 
@@ -36,7 +37,7 @@ const QuotePDF = ({ quote }) => (
   <Document>
     <Page style={styles.page}>
       <View style={styles.header}>
-        <Text>Insurance Quote #{quote.quoteId}</Text>
+        <Text>Insurance Quote {quote.quoteId}</Text>
         <Text style={{ fontSize: 14, marginTop: 5 }}>Valid until: {quote.generatedDate}</Text>
       </View>
       

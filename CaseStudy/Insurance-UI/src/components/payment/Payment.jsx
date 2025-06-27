@@ -2,18 +2,19 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 
 export const Payment = () => {
+
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+
     const fetchPayments = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(
-          'http://localhost:8080/api/payments_new/get-all',
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const response = await axios.get('http://localhost:8080/api/payments_new/get-all', { 
+          headers: { "Authorization": "Bearer " + token }
+        });
         setPayments(response.data);
         setLoading(false);
       } catch (err) {
@@ -38,12 +39,7 @@ export const Payment = () => {
       <div className="error-container">
         <p className="error-title">Error</p>
         <p>{error}</p>
-        <button 
-          onClick={() => window.location.reload()}
-          className="retry-button"
-        >
-          Retry
-        </button>
+        <button className="retry-button" onClick={() => window.location.reload()}> Retry</button>
       </div>
     );
   }

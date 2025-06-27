@@ -4,23 +4,24 @@ import { useNavigate } from 'react-router-dom';
 import AdminAppBar from '../admin/AdminAppbar';
 
 function PolicyAddOns() {
+
   const [addOns, setAddOns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    
     const fetchAddOns = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
           throw new Error('No authentication token found');
         }
-
         const response = await axios.get('http://localhost:8080/api/policy-addons/get-all', {
-          headers: { "Authorization": `Bearer ${token}` }
+          headers: { "Authorization": "Bearer " + token }
         });
-        
         setAddOns(response.data);
         setLoading(false);
       } catch (err) {
@@ -32,6 +33,28 @@ function PolicyAddOns() {
 
     fetchAddOns();
   }, []);
+
+  const handleDelete = async (addonId) => {
+    try {
+      setDeletingId(addonId);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+      
+      await axios.delete(`http://localhost:8080/api/policy-addons/delete/${addonId}`, {
+        headers: { "Authorization": "Bearer " + token }
+      });
+      
+      // Remove the deleted addon from state
+      setAddOns(addOns.filter(addOn => addOn.addonId !== addonId));
+    } catch (err) {
+      console.error("Error deleting addon:", err);
+      setError(err.response?.data?.message || 'Failed to delete addon');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -86,6 +109,20 @@ function PolicyAddOns() {
                     {new Date(addOn.policy.startDate).toLocaleDateString()} - {new Date(addOn.policy.endDate).toLocaleDateString()}
                   </span>
                 </div>
+
+                <div style={styles.actionsContainer}>
+                  <button style={styles.deleteButton} onClick={() => handleDelete(addOn.addonId)} disabled={deletingId === addOn.addonId}>
+                    {deletingId === addOn.addonId ? (
+                      <span style={styles.buttonContent}>
+                        <span style={styles.spinner}></span> Deleting...
+                      </span>
+                    ) : (
+                      <span style={styles.buttonContent}>
+                        <span style={styles.trashIcon}>&#128465;</span> Delete
+                      </span>
+                    )}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -96,6 +133,7 @@ function PolicyAddOns() {
 }
 
 const styles = {
+  
   container: {
     padding: '20px',
     maxWidth: '1200px',
@@ -120,6 +158,7 @@ const styles = {
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     padding: '20px',
     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+    position: 'relative',
     ':hover': {
       transform: 'translateY(-5px)',
       boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)'
@@ -167,7 +206,8 @@ const styles = {
   statusContainer: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: '15px'
   },
   statusBadge: {
     color: 'white',
@@ -197,6 +237,52 @@ const styles = {
     padding: '20px',
     color: '#6c757d',
     fontSize: '1.1rem'
+  },
+  actionsContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    paddingTop: '10px',
+    borderTop: '1px solid #eee'
+  },
+  deleteButton: {
+    backgroundColor: '#dc3545',
+    color: 'white',
+    border: 'none',
+    padding: '8px 15px',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '0.9rem',
+    display: 'flex',
+    alignItems: 'center',
+    transition: 'background-color 0.2s',
+    ':hover': {
+      backgroundColor: '#c82333'
+    },
+    ':disabled': {
+      backgroundColor: '#6c757d',
+      cursor: 'not-allowed'
+    }
+  },
+  buttonContent: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px'
+  },
+  trashIcon: {
+    fontSize: '1rem'
+  },
+  spinner: {
+    display: 'inline-block',
+    width: '12px',
+    height: '12px',
+    border: '2px solid rgba(255,255,255,0.3)',
+    borderRadius: '50%',
+    borderTopColor: '#fff',
+    animation: 'spin 1s ease-in-out infinite',
+    marginRight: '5px'
+  },
+  '@keyframes spin': {
+    to: { transform: 'rotate(360deg)' }
   }
 };
 

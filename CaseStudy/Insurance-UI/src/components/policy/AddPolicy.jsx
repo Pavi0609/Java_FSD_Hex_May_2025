@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addPolicy } from '../../store/actions/AddPolicyAction';
-import AdminAppBar from '../admin/AdminAppBar';
+import AdminAppBar from '../admin/AdminAppbar';
 
 function AddPolicy() {
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   
@@ -95,6 +96,7 @@ function AddPolicy() {
 
   // Redirect on success
   useEffect(() => {
+
     if (success) {
       const timer = setTimeout(() => {
         navigate('/policies');
@@ -134,8 +136,7 @@ function AddPolicy() {
               value={formData.policyName}
               onChange={handleChange}
               style={styles.input}
-              placeholder="Enter policy name"
-            />
+              placeholder="Enter policy name"/>
             {errors.policyName && (
               <span style={styles.errorText}>{errors.policyName}</span>
             )}
@@ -154,8 +155,7 @@ function AddPolicy() {
               style={styles.input}
               placeholder="Enter premium amount"
               step="0.01"
-              min="0"
-            />
+              min="0"/>
             {errors.premiumAmount && (
               <span style={styles.errorText}>{errors.premiumAmount}</span>
             )}
@@ -170,8 +170,7 @@ function AddPolicy() {
               name="policyStatus"
               value={formData.policyStatus}
               onChange={handleChange}
-              style={styles.select}
-            >
+              style={styles.select}>
               <option value="ACTIVE">Active</option>
               <option value="EXPIRED">Expired</option>
             </select>
@@ -187,8 +186,7 @@ function AddPolicy() {
               name="startDate"
               value={formData.startDate}
               onChange={handleChange}
-              style={styles.input}
-            />
+              style={styles.input}/>
             {errors.startDate && (
               <span style={styles.errorText}>{errors.startDate}</span>
             )}
@@ -204,8 +202,7 @@ function AddPolicy() {
               name="endDate"
               value={formData.endDate}
               onChange={handleChange}
-              style={styles.input}
-            />
+              style={styles.input}/>
             {errors.endDate && (
               <span style={styles.errorText}>{errors.endDate}</span>
             )}
@@ -215,15 +212,13 @@ function AddPolicy() {
             <button
               type="submit"
               style={styles.submitButton}
-              disabled={loading}
-            >
+              disabled={loading}>
               {loading ? 'Adding...' : 'Add Policy'}
             </button>
             <button
               type="button"
               style={styles.cancelButton}
-              onClick={() => navigate('/policy')}
-            >
+              onClick={() => navigate('/policy')}>
               Cancel
             </button>
           </div>

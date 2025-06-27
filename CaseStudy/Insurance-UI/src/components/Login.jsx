@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { setUserDetails } from "../store/actions/UserAction";
 
 function Login() {
+
     let [username, setUsername] = useState("");
     let [password, setPassword] = useState("");
     let [msg, setMsg] = useState("");
@@ -12,6 +13,7 @@ function Login() {
     const dispatch = useDispatch();
 
     const processLogin = async () => {
+        
         let encodedString = window.btoa(username + ':' + password);
 
         try {
@@ -20,7 +22,6 @@ function Login() {
             });
             
             if (!response.data.token) throw new Error("No token received");
-            
             const token = response.data.token; 
             localStorage.setItem('token', token); 
             
@@ -84,18 +85,18 @@ function Login() {
                                         type="text" 
                                         className="form-control"
                                         style={{ borderColor: '#ddd', borderRadius: '6px' }}
-                                        onChange={(e) => setUsername(e.target.value)} 
-                                    />
+                                        onChange={(e) => setUsername(e.target.value)} />
                                 </div>
+
                                 <div className="mb-3">
                                     <label style={{ color: '#2c3e50', fontWeight: '500' }}>Enter password:</label>
                                     <input 
                                         type="password" 
                                         className="form-control"
                                         style={{ borderColor: '#ddd', borderRadius: '6px' }}
-                                        onChange={(e) => setPassword(e.target.value)} 
-                                    />
+                                        onChange={(e) => setPassword(e.target.value)} />
                                 </div>
+
                                 <div className="mb-3">
                                     <button 
                                         className="btn w-100"
@@ -107,12 +108,12 @@ function Login() {
                                             padding: '10px',
                                             fontWeight: '500'
                                         }}
-                                        onClick={processLogin}
-                                    >
+                                        onClick={processLogin}>
                                         LOGIN
                                     </button>
                                 </div>
                             </div>
+
                             <div className="card-footer text-center" style={{ 
                                 backgroundColor: 'transparent',
                                 borderTop: '1px solid #eee'
@@ -128,8 +129,7 @@ function Login() {
                                         padding: '0',
                                         textDecoration: 'underline'
                                     }}
-                                    onClick={() => navigate('/signup')}
-                                >
+                                    onClick={() => navigate('/signup')}>
                                     Sign Up
                                 </button>
                             </div>

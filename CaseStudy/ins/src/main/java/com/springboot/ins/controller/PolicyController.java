@@ -71,7 +71,7 @@ public class PolicyController {
 	}
 	   
     // delete policy by id
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete/{policyId}")
     public ResponseEntity<?> deleteByPolicyId(@PathVariable Long policyId) {
         policyService.deleteByPolicyId(policyId);
         return ResponseEntity.status(HttpStatus.OK).body("Policy deleted");

@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Review = () => {
+
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+
     const fetchReviews = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/review/get-all');
@@ -54,8 +56,7 @@ const Review = () => {
                   style={{
                     ...styles.star,
                     color: i < parseInt(review.rating) ? '#FFD700' : '#ddd'
-                  }}
-                >
+                  }}> ★
                 </span>
               ))}
               <span style={styles.ratingText}>{review.rating}/5</span>
@@ -67,9 +68,11 @@ const Review = () => {
               <p style={styles.customerName}>
                 <strong>Customer:</strong> {review.proposal.customer.customerName}
               </p>
+
               <p style={styles.vehicleInfo}>
                 <strong>Vehicle:</strong> {review.proposal.vehicleModel} ({review.proposal.vehicleType})
               </p>
+
               <p style={styles.policyInfo}>
                 <strong>Policy:</strong> {review.proposal.policy.policyName}
               </p>
@@ -117,7 +120,8 @@ const styles = {
   },
   star: {
     fontSize: '1.5rem',
-    marginRight: '0.2rem'
+    marginRight: '0.2rem',
+    transition: 'color 0.3s ease'
   },
   ratingText: {
     marginLeft: '0.5rem',

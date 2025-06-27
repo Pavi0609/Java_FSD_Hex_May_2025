@@ -9,7 +9,7 @@ import com.springboot.ins.model.Policy;
 
 public interface PolicyRepository extends JpaRepository<Policy, Long> {
 	
-	@Query("DELETE FROM Policy p WHERE p.policyId = ?1")
+	// @Query("DELETE FROM Policy p WHERE p.policyId = ?1")
 	void deleteByPolicyId(Long policyId);
 
 	@Query("SELECT p FROM Policy p WHERE p.policyId = ?1")

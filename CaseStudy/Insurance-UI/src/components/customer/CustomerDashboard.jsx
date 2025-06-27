@@ -4,18 +4,20 @@ import axios from "axios";
 import CustomerAppBar from "./CustomerAppBar";
 
 function CustomerDashboard() {
+
   const navigate = useNavigate();
   const [customerName, setCustomerName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+
     const fetchCustomerData = async () => {
       try {
         const username = localStorage.getItem('username');
         const token = localStorage.getItem('token');
         const response = await axios.get('http://localhost:8080/api/customer/get-one-username', {
-          headers: { "Authorization": `Bearer ${token}` }
+          headers: { "Authorization": "Bearer " + token }
         });
         setCustomerName(response.data.customerName);
         setLoading(false);
@@ -75,8 +77,7 @@ function CustomerDashboard() {
           <div 
             className="dashboard-card" 
             onClick={() => handleCardClick('/createProposal')}
-            style={{ '--card-color': '#4e73df' }}
-          >
+            style={{ '--card-color': '#4e73df' }}>
             <div className="card-icon">📝</div>
             <h3 className="card-title">New Proposal</h3>
             <p className="card-text">Create a new insurance proposal for your vehicle</p>
@@ -86,8 +87,7 @@ function CustomerDashboard() {
           <div 
             className="dashboard-card" 
             onClick={() => handleCardClick('/myProposals')}
-            style={{ '--card-color': '#1cc88a' }}
-          >
+            style={{ '--card-color': '#1cc88a' }}>
             <div className="card-icon">📋</div>
             <h3 className="card-title">My Proposals</h3>
             <p className="card-text">Review and manage your insurance proposals</p>
@@ -97,8 +97,7 @@ function CustomerDashboard() {
           <div 
             className="dashboard-card" 
             onClick={() => handleCardClick('/myQuotes')}
-            style={{ '--card-color': '#36b9cc' }}
-          >
+            style={{ '--card-color': '#36b9cc' }}>
             <div className="card-icon">💲</div>
             <h3 className="card-title">Insurance Quotes</h3>
             <p className="card-text">Compare premium quotes from providers</p>
@@ -108,19 +107,27 @@ function CustomerDashboard() {
           <div 
             className="dashboard-card" 
             onClick={() => handleCardClick('/addClaim')}
-            style={{ '--card-color': '#e74a3b' }}
-          >
+            style={{ '--card-color': '#e74a3b' }}>
             <div className="card-icon">⚠️</div>
             <h3 className="card-title">File a Claim</h3>
             <p className="card-text">Report a new claim for accident or damage</p>
+          </div>
+
+          {/* My Claims */}
+          <div
+            className="dashboard-card"
+            onClick={() => handleCardClick('/myClaim')}
+            style={{ '--card-color': '#4e73df' }}>
+            <div className="card-icon">🧾</div>
+            <h3 className="card-title">My Claims</h3>
+            <p className="card-text">View and manage your policy claims</p>
           </div>
           
           {/* My Payment */}
           <div 
             className="dashboard-card" 
             onClick={() => handleCardClick('/myPayment')}
-            style={{ '--card-color': '#f6c23e' }}
-          >
+            style={{ '--card-color': '#f6c23e' }}>
             <div className="card-icon">💰</div>
             <h3 className="card-title">My Payment</h3>
             <p className="card-text">View and manage your policy payments</p>
